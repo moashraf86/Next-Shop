@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Barlow, Jost } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 const jost = Jost({
   variable: "--font-jost",
@@ -31,7 +30,6 @@ export default function RootLayout({
       <body className={`${jost.variable} ${barlow.variable} antialiased`}>
         <Header />
         {children}
-        <Footer />
       </body>
     </html>
   );
