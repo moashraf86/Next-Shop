@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: "Jost", sans-serif;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%; /* white */
@@ -68,5 +64,8 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .scrollbar-hide {
+    scrollbar-width: none;
   }
 }

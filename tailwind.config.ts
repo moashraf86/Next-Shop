@@ -9,6 +9,13 @@ export default {
   ],
   theme: {
     extend: {
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: "20px",
+          lg: "40px",
+        },
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -52,7 +59,7 @@ export default {
         },
       },
       fontFamily: {
-        jost: ["Jost", "sans-serif"],
+        jost: ["Jost", "Jost Fallback"],
         barlow: ["Barlow", "sans-serif"],
       },
       borderRadius: {

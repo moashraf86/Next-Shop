@@ -1,25 +1,29 @@
-import Image from "next/image";
+"use client";
 import Link from "next/link";
 import React from "react";
 import { Search, ShoppingBag, UserRound } from "lucide-react";
 import { Button } from "../ui/button";
+import Logo from "./Logo";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
+  const pathname = usePathname();
   return (
-    <header className="bg-transparent text-primary-foreground fixed top-0 left-0 right-0 z-10 hover:bg-background hover:text-primary group">
+    <header
+      className={cn(
+        "bg-transparent text-primary-foreground fixed top-0 left-0 right-0 z-10 hover:bg-background hover:text-primary group",
+        pathname !== "/" &&
+          "sticky top-0 bg-background text-primary border-b border-border"
+      )}
+    >
       <div className="mx-auto flex h-16 max-w-screen-xl items-center px-4 sm:px-6 lg:px-8">
         {/* Navigation */}
         <nav aria-label="Global" className="flex-1">
           <ul className="hidden lg:flex items-center gap-6 text-sm">
             <li>
               <Link className="text-inherit text-[15px]" href="#">
-                Shop by category
-              </Link>
-            </li>
-
-            <li>
-              <Link className="text-inherit text-[15px]" href="#">
-                Shop by device
+                Shop
               </Link>
             </li>
 
@@ -55,13 +59,7 @@ export default function Header() {
         {/* Logo */}
         <Link className="block" href="/">
           <span className="sr-only">Home</span>
-          <Image
-            alt="Logo"
-            width={100}
-            height={20}
-            src="/logo.avif"
-            className="group-hover:invert"
-          />
+          <Logo />
         </Link>
 
         {/* Actions */}
