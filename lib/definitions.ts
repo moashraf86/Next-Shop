@@ -19,6 +19,9 @@ export interface Product {
       thumbnail: { url: string; height: number; width: number };
     };
   };
+  categories: Array<{
+    name: string;
+  }>;
   price: number;
   createdAt: string;
   updatedAt: string;

@@ -5,22 +5,22 @@ const categories = [
   {
     name: "Men",
     image: "/categories/men.webp",
-    href: "/category/men",
+    href: "/products/men",
   },
   {
     name: "Women",
     image: "/categories/women.webp",
-    href: "/category/women",
+    href: "/products/women",
   },
   {
     name: "Straps & Bands",
     image: "/categories/straps.webp",
-    href: "/category/straps",
+    href: "/products/straps",
   },
   {
     name: "Gift & Pouches",
     image: "/categories/gifts.jpg",
-    href: "/category/gifts",
+    href: "/products/gifts",
   },
 ];
 
