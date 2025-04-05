@@ -1,4 +1,4 @@
-import { Product, StrapiResponse } from "./definitions";
+import { Product, SingleStrapiResponse, StrapiResponse } from "./definitions";
 
 // [1] fetch all products
 export async function fetchProducts(): Promise<{ products: Product[] }> {
@@ -85,5 +85,32 @@ export async function fetchBestSellingProducts(
 
   return {
     products,
+  };
+}
+
+// [4] fetch product by id
+export async function fetchProductById(
+  id: string
+): Promise<{ product: Product }> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products/${id}?populate=*`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+      },
+      next: { revalidate: 60 },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch product");
+  }
+
+  const response: SingleStrapiResponse<Product> = await res.json();
+
+  const product = response.data;
+
+  return {
+    product,
   };
 }

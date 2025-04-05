@@ -9,7 +9,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <Link
-      href={`/products/${product.id}`}
+      href={`/products/${product.documentId}`}
       className="group grid gap-4 overflow-hidden"
     >
       <div className="aspect-[3/4] relative overflow-hidden bg-gray-100">

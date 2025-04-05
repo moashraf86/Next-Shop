@@ -5,17 +5,17 @@ const categories = [
   {
     name: "Men",
     image: "/categories/men.webp",
-    href: "/products/men",
+    href: "/categories/men",
   },
   {
     name: "Women",
     image: "/categories/women.webp",
-    href: "/products/women",
+    href: "/categories/women",
   },
   {
     name: "Straps & Bands",
     image: "/categories/straps.webp",
-    href: "/products/straps",
+    href: "/categories/straps",
   },
   {
     name: "Gift & Pouches",
