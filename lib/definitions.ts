@@ -2,7 +2,7 @@ export interface Product {
   id: number;
   documentId: string;
   title: string;
-  description: StrapiRichText;
+  description: Array<StrapiRichText>;
   image: StrapiImage;
   categories: Array<{ name: string }>;
   price: number;
@@ -23,6 +23,7 @@ interface StrapiImage {
   url: string;
   height: number;
   width: number;
+  alternativeText: string;
   formats: {
     large: StrapiImageFormat;
     medium: StrapiImageFormat;
