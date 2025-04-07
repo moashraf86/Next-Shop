@@ -26,8 +26,6 @@ export default async function ProductDetails({
     product.categories[0].name
   );
 
-  // filter out the current product from related products
-
   return (
     <section>
       <div className="container max-w-screen-xl">

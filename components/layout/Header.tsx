@@ -6,15 +6,19 @@ import { Button } from "../ui/button";
 import Logo from "./Logo";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 export default function Header() {
   const pathname = usePathname();
+  const { user } = useUser();
+  const isSignedIn = !!user;
+
   return (
     <header
       className={cn(
-        "bg-transparent text-primary-foreground fixed top-0 left-0 right-0 z-10 hover:bg-background hover:text-primary group",
+        "bg-transparent text-primary-foreground fixed top-0 left-0 right-0 z-10 hover:bg-background hover:text-foreground group",
         pathname !== "/" &&
-          "sticky top-0 bg-background text-primary border-b border-border"
+          "sticky top-0 bg-background text-foreground border-b border-border"
       )}
     >
       <div className="mx-auto flex h-16 max-w-screen-xl items-center px-4 sm:px-6 lg:px-8">
@@ -65,15 +69,29 @@ export default function Header() {
         {/* Actions */}
         <div className="flex items-center gap-4 flex-1 justify-end">
           <div className="flex gap-5">
-            <Link href="/search">
+            <Link
+              href="/search"
+              className="flex justify-center items-center size-7"
+            >
               <Search className="block size-5 text-inherit " />
             </Link>
-            <Link href="/login">
-              <UserRound className="block size-5 text-inherit" />
-            </Link>
-            <Link href="/cart">
+
+            <Link
+              href="/cart"
+              className="flex justify-center items-center size-7"
+            >
               <ShoppingBag className="block size-5 text-inherit" />
             </Link>
+            {isSignedIn ? (
+              <UserButton afterSwitchSessionUrl="/sign-in" />
+            ) : (
+              <Link
+                href="/sign-in"
+                className="flex justify-center items-center size-7"
+              >
+                <UserRound className="block size-5 text-inherit" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

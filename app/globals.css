@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --background: 0 0% 100%; /* white */
-    --foreground: 0 0 5.1%; /* black */
+    --foreground: 0 0 18.04%; /* black */
     --card: 0 0% 100%;
     --card-foreground: 0 0 5.1%;
     --popover: 0 0% 100%;
@@ -69,6 +69,15 @@
   body {
     @apply bg-background text-foreground;
   }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-primary;
+  }
+
   .scrollbar-hide {
     scrollbar-width: none;
   }

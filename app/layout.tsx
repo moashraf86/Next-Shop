@@ -3,6 +3,7 @@ import { Jost } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import { cn } from "@/lib/utils";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const jost = Jost({
   variable: "--font-jost",
@@ -21,11 +22,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={cn(jost.className, "antialiased")}>
-        <Header />
-        {children}
-      </body>
-    </html>
+    <ClerkProvider afterSignOutUrl="/sign-in">
+      <html lang="en">
+        <body className={cn(jost.className, "antialiased")}>
+          <Header />
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
