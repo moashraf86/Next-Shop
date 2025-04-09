@@ -5,6 +5,7 @@ export interface Product {
   description: Array<StrapiRichText>;
   image: StrapiImage;
   categories: Array<{ name: string }>;
+  cart_items: Array<CartItem>;
   price: number;
   createdAt: string;
   updatedAt: string;
@@ -60,4 +61,18 @@ export interface StrapiResponse<T> {
       total: number;
     };
   };
+}
+
+export interface CartItem {
+  id: number;
+  quantity: number;
+  product: Product;
+}
+
+export interface CartContextType {
+  cartItems: CartItem[];
+  addToCart: (productId: number) => void;
+  removeProductFromCart: (productId: number) => void;
+  getCartCount: () => number;
+  clearCart: () => void;
 }

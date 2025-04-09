@@ -9,15 +9,17 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import ProductCard from "../ProductCard";
-import { Button } from "@/components/ui/button";
+import ProductActions from "@/components/product/ProductActions";
+import ProductPrice from "@/components/product/ProductPrice";
+import ProductDescription from "@/components/product/ProductDescription";
+import ProductTitle from "@/components/product/ProductTitle";
 
 export default async function ProductDetails({
   params,
 }: {
   params: { slug: string };
 }) {
-  const { slug } = await params;
-
+  const { slug } = params;
   // Fetch product by ID
   const { product } = await fetchProductById(slug);
 
@@ -46,7 +48,7 @@ export default async function ProductDetails({
           <div className="aspect-square relative overflow-hidden bg-gray-100">
             <Image
               src={product.image.url}
-              alt={product.image.alternativeText}
+              alt={product.image.alternativeText || "Product Image"}
               fill
               className="object-cover object-center"
               quality={100}
@@ -55,42 +57,10 @@ export default async function ProductDetails({
           </div>
           {/* Product details */}
           <div className="space-y-6">
-            <h1 className="text-2xl font-bold">{product.title}</h1>
-            {/* Product description */}
-            {product.description.map(
-              (
-                block: { type: string; children: { text: string }[] },
-                index: number
-              ) => {
-                if (block.type === "paragraph") {
-                  return (
-                    <p key={index}>
-                      {block.children.map((child, i) => (
-                        <span key={i}>{child.text}</span>
-                      ))}
-                    </p>
-                  );
-                }
-                return null;
-              }
-            )}
-            {/* Product Price */}
-            <div>
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-              }).format(product.price)}{" "}
-              USD
-            </div>
-            {/* Call to action btns */}
-            <div className="flex flex-col gap-4">
-              <Button variant="success" size="lg">
-                Add to Cart
-              </Button>
-              <Button variant="emphasis" size="lg">
-                Buy it Now
-              </Button>
-            </div>
+            <ProductTitle title={product.title} />
+            <ProductDescription description={product.description} />
+            <ProductPrice price={product.price} />
+            <ProductActions productId={product.id} />
           </div>
           {/* Related products */}
           <div className="col-span-full mt-8">

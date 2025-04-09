@@ -7,11 +7,17 @@ import Logo from "./Logo";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { useCart } from "@/app/context/CartContext";
 
 export default function Header() {
   const pathname = usePathname();
   const { user } = useUser();
   const isSignedIn = !!user;
+  const { cartItems, getCartCount } = useCart();
+  console.log("cartItems", cartItems);
+
+  // get car count
+  console.log("cart count", getCartCount());
 
   return (
     <header
@@ -78,9 +84,16 @@ export default function Header() {
 
             <Link
               href="/cart"
-              className="flex justify-center items-center size-7"
+              className="relative flex justify-center items-center size-7"
             >
               <ShoppingBag className="block size-5 text-inherit" />
+              <span>
+                {cartItems?.length > 0 && (
+                  <span className="absolute -top-[2px] -right-[2px] flex items-center justify-center w-4 h-4 text-xs font-medium text-white bg-red-500 rounded-full">
+                    {getCartCount()}
+                  </span>
+                )}
+              </span>
             </Link>
             {isSignedIn ? (
               <UserButton afterSwitchSessionUrl="/sign-in" />

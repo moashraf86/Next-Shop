@@ -114,3 +114,25 @@ export async function fetchProductById(
     product,
   };
 }
+
+// [5] fetch cart products from strapi
+export async function fetchCartItems(email: string | undefined) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/carts?filters[email][$eq]=${email}&populate[cart_items][populate][product][populate]=image`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+      },
+      next: { revalidate: 60 },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch cart items");
+  }
+
+  const response: StrapiResponse<Product> = await res.json();
+
+  const cartItems = response.data;
+  return cartItems;
+}

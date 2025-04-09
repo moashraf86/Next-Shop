@@ -1,0 +1,142 @@
+import { CartItem } from "./definitions";
+
+// [1] create cart entry
+export const createCart = async (data: { username: string; email: string }) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_API_URL}/carts`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+      },
+      body: JSON.stringify({
+        data: {
+          username: data.username,
+          email: data.email,
+        },
+      }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(
+        `Failed to create cart: ${errorData.error || "Unknown error"}`
+      );
+    }
+
+    const response = await res.json();
+    return response;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in createCart:", error.message);
+    } else {
+      console.error("Error in createCart:", error);
+    }
+    throw error;
+  }
+};
+
+// [2] add product to cart
+export const addProductToCart = async (email: string, productId: number) => {
+  try {
+    // Fetch existing cart for the user
+    const cartRes = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/carts?filters[email][$eq]=${email}&populate[cart_items][populate]=product`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+      }
+    );
+
+    if (!cartRes.ok) {
+      throw new Error("Failed to fetch cart");
+    }
+
+    const cartData = await cartRes.json();
+
+    let cart = cartData.data[0];
+    console.log("cart", cart);
+
+    if (!cart) {
+      // Create a new cart if none exists
+      const newCart = await createCart({ username: "Guest", email });
+      cart = newCart.data;
+    }
+
+    // Ensure cart and cart items exist
+    const cartItems = cart.cart_items || [];
+
+    // Check if the product already exists in the cart
+    const existingCartItem = cartItems.find(
+      (item: CartItem) => item.product.id === productId
+    );
+
+    if (existingCartItem) {
+      console.log("existingCartItem", existingCartItem);
+
+      // Update the quantity of the existing cart item
+      const updateRes = await fetch(
+        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/cart-items/${existingCartItem.documentId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+          },
+          body: JSON.stringify({
+            data: {
+              quantity: existingCartItem.quantity + 1,
+            },
+          }),
+        }
+      );
+
+      if (!updateRes.ok) {
+        const errorData = await updateRes.json();
+        throw new Error(
+          `Failed to update cart item: ${errorData.error || "Unknown error"}`
+        );
+      }
+
+      const updatedCartItem = await updateRes.json();
+      return updatedCartItem;
+    } else {
+      // Add a new cart item
+      const addItemRes = await fetch(
+        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/cart-items`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+          },
+          body: JSON.stringify({
+            data: {
+              quantity: 1,
+              product: productId,
+              cart: cart.id,
+            },
+          }),
+        }
+      );
+
+      if (!addItemRes.ok) {
+        const errorData = await addItemRes.json();
+        throw new Error(
+          `Failed to add product to cart: ${errorData.error || "Unknown error"}`
+        );
+      }
+
+      const newCartItem = await addItemRes.json();
+      return newCartItem;
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in addProductToCart:", error.message);
+    } else {
+      console.error("Error in addProductToCart:", error);
+    }
+    throw error;
+  }
+};
