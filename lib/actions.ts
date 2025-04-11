@@ -1,7 +1,10 @@
-import { CartItem } from "./definitions";
+import { CartItem, Product } from "./definitions";
 
 // [1] create cart entry
-export const createCart = async (data: { username: string; email: string }) => {
+export const createCart = async (data: {
+  username: string;
+  email: string | undefined;
+}) => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_API_URL}/carts`, {
       method: "POST",
@@ -37,7 +40,10 @@ export const createCart = async (data: { username: string; email: string }) => {
 };
 
 // [2] add product to cart
-export const addProductToCart = async (email: string, productId: number) => {
+export const addProductToCart = async (
+  email: string | undefined,
+  product: Product
+) => {
   try {
     // Fetch existing cart for the user
     const cartRes = await fetch(
@@ -56,7 +62,6 @@ export const addProductToCart = async (email: string, productId: number) => {
     const cartData = await cartRes.json();
 
     let cart = cartData.data[0];
-    console.log("cart", cart);
 
     if (!cart) {
       // Create a new cart if none exists
@@ -69,12 +74,10 @@ export const addProductToCart = async (email: string, productId: number) => {
 
     // Check if the product already exists in the cart
     const existingCartItem = cartItems.find(
-      (item: CartItem) => item.product.id === productId
+      (item: CartItem) => item.product.id === product.id
     );
 
     if (existingCartItem) {
-      console.log("existingCartItem", existingCartItem);
-
       // Update the quantity of the existing cart item
       const updateRes = await fetch(
         `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/cart-items/${existingCartItem.documentId}`,
@@ -114,8 +117,8 @@ export const addProductToCart = async (email: string, productId: number) => {
           body: JSON.stringify({
             data: {
               quantity: 1,
-              product: productId,
               cart: cart.id,
+              product: product.id,
             },
           }),
         }
@@ -129,6 +132,7 @@ export const addProductToCart = async (email: string, productId: number) => {
       }
 
       const newCartItem = await addItemRes.json();
+
       return newCartItem;
     }
   } catch (error: unknown) {
@@ -136,6 +140,38 @@ export const addProductToCart = async (email: string, productId: number) => {
       console.error("Error in addProductToCart:", error.message);
     } else {
       console.error("Error in addProductToCart:", error);
+    }
+    throw error;
+  }
+};
+
+// [3] remove cart item
+export const removeCartItem = async (cartItemId: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/cart-items/${cartItemId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(
+        `Failed to remove cart item: ${errorData.error || "Unknown error"}`
+      );
+    }
+
+    return true;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in removeCartItem:", error.message);
+    } else {
+      console.error("Error in removeCartItem:", error);
     }
     throw error;
   }

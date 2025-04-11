@@ -60,7 +60,7 @@ export default async function ProductDetails({
             <ProductTitle title={product.title} />
             <ProductDescription description={product.description} />
             <ProductPrice price={product.price} />
-            <ProductActions productId={product.id} />
+            <ProductActions product={product} />
           </div>
           {/* Related products */}
           <div className="col-span-full mt-8">

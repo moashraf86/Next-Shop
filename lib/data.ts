@@ -133,6 +133,7 @@ export async function fetchCartItems(email: string | undefined) {
 
   const response: StrapiResponse<Product> = await res.json();
 
-  const cartItems = response.data;
+  const cartItems = response.data[0].cart_items;
+
   return cartItems;
 }

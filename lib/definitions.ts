@@ -65,14 +65,16 @@ export interface StrapiResponse<T> {
 
 export interface CartItem {
   id: number;
+  documentId: string;
   quantity: number;
   product: Product;
 }
 
 export interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (productId: number) => void;
-  removeProductFromCart: (productId: number) => void;
+  addProductToCart: (product: Product) => void;
+  removeCartItem: (itemId: string) => void;
   getCartCount: () => number;
   clearCart: () => void;
+  loading: boolean;
 }

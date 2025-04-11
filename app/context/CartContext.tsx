@@ -1,3 +1,8 @@
+import { toast } from "@/hooks/use-toast";
+import {
+  addProductToCart as apiAddProductToCart,
+  removeCartItem as apiRemoveCartItem,
+} from "@/lib/actions";
 import { fetchCartItems } from "@/lib/data";
 import { CartContextType, CartItem, Product } from "@/lib/definitions";
 import { useUser } from "@clerk/nextjs";
@@ -7,49 +12,108 @@ const CartContext = createContext<CartContextType>({} as CartContextType);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const { user } = useUser();
   const email = user?.emailAddresses[0]?.emailAddress;
-  console.log(email);
 
   // Initialize cart items from strapi
   useEffect(() => {
-    console.log(cartItems);
-
-    fetchCartItems(email).then((response) => {
-      const items = response[0]?.cart_items;
-      setCartItems(items);
-      console.log("Fetched cart items:", items);
-    });
+    async function fetchCart() {
+      if (!email) return;
+      try {
+        setLoading(true);
+        // fetch cart items from strapi
+        const items = await fetchCartItems(email);
+        setCartItems(items);
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCart();
   }, [email]);
 
   // Add item to cart
-  const addToCart = (productId: number) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find(
-        (item) => item.product.id === productId
-      );
-      console.log("existingItem", existingItem);
+  const addProductToCart = async (product: Product) => {
+    try {
+      setLoading(true);
 
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.product.id === productId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+      // Add product to Strapi and get the response
+      const res = await apiAddProductToCart(email, product);
+
+      // Simulate delay for 1 second
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Update cart items in context
+      setCartItems((prevItems) => {
+        const existingItem = prevItems.find(
+          (item) => item.product.id === product.id
         );
-      } else {
-        return [
-          ...prevItems,
-          { id: productId, quantity: 1, product: { id: productId } as Product },
-        ];
-      }
-    });
+
+        if (existingItem) {
+          return prevItems.map((item) =>
+            item.product.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        } else {
+          // Add new item to cart with documentId from Strapi
+          const newItem = {
+            id: res.data.id,
+            documentId: res.data.documentId,
+            quantity: 1,
+            product: product,
+          };
+          return [...prevItems, newItem];
+        }
+      });
+
+      // Show success toast notification
+      toast({
+        title: "Added to cart",
+        description: "Item has been added to your cart",
+      });
+    } catch (error: unknown) {
+      console.error("Error adding product to cart:", error);
+
+      // Show error toast notification
+      toast({
+        title: "Error adding to cart",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Remove item from cart
-  const removeProductFromCart = (productId: number) => {
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.id !== productId)
-    );
+  const removeCartItem = async (itemId: string) => {
+    try {
+      await apiRemoveCartItem(itemId);
+      // Simulate delay for 1 second
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Update cart items in context
+      setCartItems((prevItems) =>
+        prevItems.filter((item) => item.documentId !== itemId)
+      );
+      // Show success toast notification
+      toast({
+        title: "Item removed",
+        description: "Item has been removed from your cart",
+      });
+    } catch (error) {
+      toast({
+        title: "Error removing item",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      });
+    }
   };
 
   // Get total cart count
@@ -66,10 +130,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     <CartContext.Provider
       value={{
         cartItems,
-        addToCart,
-        removeProductFromCart,
+        addProductToCart,
+        removeCartItem,
         getCartCount,
         clearCart,
+        loading,
       }}
     >
       {children}

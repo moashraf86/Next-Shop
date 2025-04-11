@@ -2,13 +2,15 @@
 import { useCart } from "@/app/context/CartContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { addProductToCart } from "@/lib/actions";
+import { Product } from "@/lib/definitions";
 import { useUser } from "@clerk/nextjs";
-export default function ProductActions({ productId }: { productId: number }) {
+export default function ProductActions({ product }: { product: Product }) {
   const { user } = useUser();
-  const { addToCart } = useCart();
+  const { addProductToCart, loading } = useCart();
+  console.log(loading);
 
   const handleAddToCart = () => {
+    // check if user is signed in
     if (!user) {
       toast({
         title: "Sign in required",
@@ -16,26 +18,8 @@ export default function ProductActions({ productId }: { productId: number }) {
       });
       return;
     }
-    // TODO: add to cart logic
-    addProductToCart(user.emailAddresses[0].emailAddress, productId)
-      .then((response) => {
-        console.log("Cart Entry ID:", response.data.id); // Logs the cart entry ID
-        console.log("Product ID:", productId); // Logs the product ID
-
-        toast({
-          title: "Added to cart",
-          description: "Item has been added to your cart",
-        });
-      })
-      .catch((error) => {
-        toast({
-          title: "Error adding to cart",
-          description: error.message,
-        });
-      });
-
-    // store cart in context
-    addToCart(productId);
+    // add product to cart
+    addProductToCart(product);
   };
 
   const handleBuyNow = () => {
@@ -54,7 +38,7 @@ export default function ProductActions({ productId }: { productId: number }) {
   return (
     <div className="flex flex-col gap-4">
       <Button onClick={handleAddToCart} variant="success" size="lg">
-        Add to Cart
+        {loading ? "Adding..." : "Add to Cart"}
       </Button>
       <Button onClick={handleBuyNow} variant="emphasis" size="lg">
         Buy it Now
