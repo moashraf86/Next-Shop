@@ -1,15 +1,17 @@
 "use client";
-import Image from "next/image";
 import { useCart } from "../context/CartContext";
-import ProductPrice from "@/components/product/ProductPrice";
-import { CartItem } from "@/lib/definitions";
+import CartItem from "@/components/cart/CartItem";
+import CartTable from "@/components/cart/CartTable";
+import { Button } from "@/components/ui/button";
+import { CartItem as CartItemType } from "@/lib/definitions";
+import Link from "next/link";
 
 export default function CartPage() {
   //  fetch cart items
   const { cartItems, removeCartItem, loading } = useCart();
 
   // Helper function to calculate the total price
-  const calculateTotalPrice = (cartItems: CartItem[]) => {
+  const calculateTotalPrice = (cartItems: CartItemType[]) => {
     return cartItems.reduce((total, item) => {
       const price = item.product?.price || 0; // Ensure price is defined
       const quantity = item.quantity || 0; // Ensure quantity is defined
@@ -17,47 +19,65 @@ export default function CartPage() {
     }, 0);
   };
 
+  // loading skelton
+  if (loading) {
+    return (
+      <section className="container max-w-screen-xl">
+        <h1 className="text-4xl font-light uppercase text-center tracking-tight py-10">
+          Cart
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="space-y-6 col-span-2">
+            <p className="text-gray-500">Loading...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // if cart is empty
+  if (cartItems.length === 0) {
+    return (
+      <section className="container max-w-screen-xl">
+        <h1 className="text-4xl font-light uppercase text-center tracking-tight py-10">
+          Cart
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="space-y-6 col-span-2">
+            <p className="text-gray-500">Your cart is empty.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="container max-w-screen-xl">
-      <h1 className="text-2xl font-bold py-6">Cart</h1>
+      <h1 className="text-4xl font-light uppercase text-center tracking-tight py-10">
+        Cart
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
         <div className="space-y-6 col-span-2">
-          {loading && <p>Loading...</p>}
-          {!loading && cartItems.length === 0 && (
-            <p className="text-gray-500">Your cart is empty.</p>
-          )}
           {/* Cart items */}
-          {cartItems.map((item) => (
-            <div key={item.id} className="flex items-start gap-4">
-              <Image
-                src={item.product?.image?.url}
-                alt={item.product?.image?.alternativeText || "Product Image"}
-                width={100}
-                height={100}
-                className="object-cover object-center"
-              />
-              <div className="space-y-2">
-                <h2 className="text-lg font-semibold">{item.product?.title}</h2>
-                <p className="text-gray-500">Qunttity: {item.quantity}</p>
-                <ProductPrice price={item.product?.price} />
-                <button
-                  className="text-red-500 hover:text-red-700"
-                  onClick={() => removeCartItem(item.documentId)}
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
+          <CartTable>
+            {cartItems.map((item, id) => (
+              <CartItem key={id} item={item} removeCartItem={removeCartItem} />
+            ))}
+          </CartTable>
         </div>
-        {/* // TODO: add total price and checkout button */}
-        <div className="flex flex-col justify-between items-center mt-4">
-          <p className="text-lg font-semibold">
-            Total: ${calculateTotalPrice(cartItems).toFixed(2)}
-          </p>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded">
-            Checkout
-          </button>
+        <div className="space-y-4 border p-6 max-h-fit">
+          <div className="flex justify-between items-center w-full">
+            <p className="text-xl uppercase tracking-widest font-semibold">
+              Total
+            </p>
+            <span className="text-xl font-semibold">
+              ${calculateTotalPrice(cartItems).toFixed(2)}
+            </span>
+          </div>
+          <p className="text-sm">Taxes and shipping calculated at checkout.</p>
+          <Button asChild variant="emphasis" className="w-full">
+            <Link href="/checkout">Checkout</Link>
+          </Button>
         </div>
       </div>
     </section>
