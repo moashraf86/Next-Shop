@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { Product } from "@/lib/definitions";
 import { useUser } from "@clerk/nextjs";
+import { Loader2 } from "lucide-react";
 export default function ProductActions({ product }: { product: Product }) {
   const { user } = useUser();
   const { addProductToCart, loading } = useCart();
@@ -37,8 +38,19 @@ export default function ProductActions({ product }: { product: Product }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Button onClick={handleAddToCart} variant="success" size="lg">
-        {loading ? "Adding..." : "Add to Cart"}
+      <Button
+        onClick={handleAddToCart}
+        variant="success"
+        size="lg"
+        disabled={loading}
+      >
+        {loading ? (
+          <span>
+            <Loader2 className="animate-spin" />
+          </span>
+        ) : (
+          "Add to Cart"
+        )}
       </Button>
       <Button onClick={handleBuyNow} variant="emphasis" size="lg">
         Buy it Now

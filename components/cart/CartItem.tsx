@@ -7,13 +7,17 @@ import { Trash2 } from "lucide-react";
 export default function CartItem({
   item,
   removeCartItem,
+  className,
+  style,
 }: {
   item: CartItemType;
   removeCartItem: (id: string) => void;
+  className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
-    <tr>
-      <td className="px-6 py-4  text-sm font-medium text-gray-800">
+    <tr className={className} style={style}>
+      <td className="px-6 py-4 text-sm font-medium text-gray-800">
         <div className="flex items-center gap-4">
           <Image
             src={item.product?.image?.url}

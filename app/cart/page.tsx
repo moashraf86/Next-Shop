@@ -4,11 +4,23 @@ import CartItem from "@/components/cart/CartItem";
 import CartTable from "@/components/cart/CartTable";
 import { Button } from "@/components/ui/button";
 import { CartItem as CartItemType } from "@/lib/definitions";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function CartPage() {
   //  fetch cart items
   const { cartItems, removeCartItem, loading } = useCart();
+  const [itemToRemove, setItemToRemove] = useState<string | null>(null);
+
+  // Remove cart item
+  const handleRemoveCartItem = (id: string) => {
+    setItemToRemove(id);
+    // Simulate a delay to show the animation
+    setTimeout(() => {
+      removeCartItem(id);
+    }, 300); // Adjust the duration to match your animation
+  };
 
   // Helper function to calculate the total price
   const calculateTotalPrice = (cartItems: CartItemType[]) => {
@@ -60,8 +72,20 @@ export default function CartPage() {
         <div className="space-y-6 col-span-2">
           {/* Cart items */}
           <CartTable>
-            {cartItems.map((item, id) => (
-              <CartItem key={id} item={item} removeCartItem={removeCartItem} />
+            {cartItems.map((item, index) => (
+              <CartItem
+                key={item.documentId}
+                item={item}
+                removeCartItem={() => handleRemoveCartItem(item.documentId)}
+                style={{
+                  animationDuration: `${300 + index * 100}ms`,
+                }}
+                className={cn(
+                  "animate-in slide-in-from-top-4 fade-in duration-300 transition-transform ease-in-out will-change-transform",
+                  itemToRemove === item.documentId &&
+                    "animate-out slide-out-to-left fade-out"
+                )}
+              />
             ))}
           </CartTable>
         </div>

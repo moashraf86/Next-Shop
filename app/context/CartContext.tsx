@@ -68,7 +68,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           return [...prevItems, newItem];
         }
       });
-
       // Show success toast notification
       toast({
         title: "Added to cart",
@@ -76,7 +75,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       });
     } catch (error: unknown) {
       console.error("Error adding product to cart:", error);
-
       // Show error toast notification
       toast({
         title: "Error adding to cart",
@@ -94,8 +92,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const removeCartItem = async (itemId: string) => {
     try {
       await apiRemoveCartItem(itemId);
-      // Simulate delay for 1 second
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       // Update cart items in context
       setCartItems((prevItems) =>
         prevItems.filter((item) => item.documentId !== itemId)
