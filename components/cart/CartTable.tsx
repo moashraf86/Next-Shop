@@ -4,8 +4,8 @@ export default function CartTable({ children }: { children: React.ReactNode }) {
       <div className="-m-1.5 overflow-x-auto">
         <div className="p-1.5 min-w-full inline-block align-middle">
           <div className="border border-border overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
+            <table className="min-w-full sm:divide-y divide-gray-200">
+              <thead className="hidden sm:table-header-group">
                 <tr>
                   <th
                     scope="col"

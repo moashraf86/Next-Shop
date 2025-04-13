@@ -24,24 +24,41 @@ export default function CartItem({
             alt={item.product?.image?.alternativeText || "Product Image"}
             width={100}
             height={100}
-            className="object-cover object-center aspect-square"
+            className="object-cover object-center sm:aspect-square"
           />
-          <div className="space-y-2">
-            <h2 className="text-base font-light font-barlow">
+          <div className="space-y-1 sm:space-y-2">
+            <h2 className="text-base font-light font-barlow leading-tight">
               {item.product?.title}
             </h2>
-            <ProductPrice price={item.product?.price} />
+            <p className="font-light">Qty: {item.quantity}</p>
+            <ProductPrice
+              price={item.product?.price}
+              className="hidden sm:block"
+            />
+            <ProductPrice
+              price={item.product?.price * item.quantity}
+              className="sm:hidden"
+            />
+            <Button
+              variant="ghost"
+              className="p-0 pt-2 h-auto text-xs text-destructive hover:text-destructive hover:bg-transparent sm:hidden"
+              onClick={() => removeCartItem(item.documentId)}
+            >
+              Remove
+            </Button>
           </div>
         </div>
       </td>
-      <td className="px-6 py-4 text-sm text-center">{item.quantity}</td>
-      <td className="px-6 py-4 text-sm text-center">
+      <td className="px-6 py-4 text-sm text-center hidden sm:table-cell">
+        {item.quantity}
+      </td>
+      <td className="px-6 py-4 text-sm text-center hidden sm:table-cell">
         {new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
         }).format(item.product?.price * item.quantity)}
       </td>
-      <td className="px-6 py-4 text-end text-sm font-medium">
+      <td className="px-6 py-4 text-end text-sm font-medium hidden sm:table-cell">
         <Button
           variant="ghost"
           size="icon"
