@@ -3,6 +3,7 @@ import ProductPrice from "../product/ProductPrice";
 import { CartItem as CartItemType } from "@/lib/definitions";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function CartItem({
   item,
@@ -16,7 +17,7 @@ export default function CartItem({
   style?: React.CSSProperties;
 }) {
   return (
-    <tr className={className} style={style}>
+    <tr className={cn("font-light", className)} style={style}>
       <td className="px-6 py-4 text-sm font-medium text-gray-800">
         <div className="flex items-center gap-4">
           <Image
@@ -26,11 +27,11 @@ export default function CartItem({
             height={100}
             className="object-cover object-center sm:aspect-square"
           />
-          <div className="space-y-1 sm:space-y-2">
-            <h2 className="text-base font-light font-barlow leading-tight">
+          <div className="space-y-1 sm:space-y-2 font-light">
+            <h2 className="text-base font-barlow leading-tight">
               {item.product?.title}
             </h2>
-            <p className="font-light">Qty: {item.quantity}</p>
+            <p>Qty: {item.quantity}</p>
             <ProductPrice
               price={item.product?.price}
               className="hidden sm:block"
@@ -53,10 +54,7 @@ export default function CartItem({
         {item.quantity}
       </td>
       <td className="px-6 py-4 text-sm text-center hidden sm:table-cell">
-        {new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(item.product?.price * item.quantity)}
+        <ProductPrice price={item.product?.price * item.quantity} />
       </td>
       <td className="px-6 py-4 text-end text-sm font-medium hidden sm:table-cell">
         <Button

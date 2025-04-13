@@ -27,7 +27,7 @@ export default function CheckoutBox({
       <p className="text-sm">Taxes and shipping calculated at checkout.</p>
       {/* Order notes */}
       <Textarea placeholder="Order notes" />
-      <Button asChild variant="emphasis" className="w-full">
+      <Button asChild variant="emphasis" className="w-full" size="lg">
         <Link href="/checkout">Checkout</Link>
       </Button>
     </div>

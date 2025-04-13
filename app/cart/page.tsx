@@ -75,8 +75,15 @@ export default function CartPage() {
               {/* Cart items count */}
               {!loading && cartItems.length > 0 && (
                 <p className="text-sm text-gray-500">
-                  {cartItems.length} item{cartItems.length > 1 ? "s" : ""} in
-                  cart
+                  {(() => {
+                    const totalItems = cartItems.reduce(
+                      (total, item) => total + item.quantity,
+                      0
+                    );
+                    return `You have ${totalItems} item${
+                      totalItems > 1 ? "s" : ""
+                    } in your cart.`;
+                  })()}
                 </p>
               )}
             </div>

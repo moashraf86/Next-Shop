@@ -8,7 +8,7 @@ export default function ProductPrice({
   className?: string;
 }) {
   return (
-    <div className={cn("text-sm font-light text-gray-500", className)}>
+    <div className={cn("text-sm font-light text-foreground", className)}>
       {new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",

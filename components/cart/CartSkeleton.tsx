@@ -48,7 +48,7 @@ export default function CartSkeleton() {
           <Skeleton className="h-2 w-1/2" />
         </div>
         <Skeleton className="h-[60px] w-full bg-transparent border border-border" />
-        <Skeleton className="h-8 w-full animate-none" />
+        <Skeleton className="h-12 w-full animate-none" />
       </div>
     </>
   );
