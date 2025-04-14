@@ -21,7 +21,10 @@ export default function CheckoutBox({
       <div className="flex justify-between items-center w-full">
         <p className="text-xl uppercase tracking-widest font-semibold">Total</p>
         <span className="text-xl font-semibold">
-          ${calculateTotalPrice(cartItems).toFixed(2)}
+          {new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(calculateTotalPrice(cartItems))}
         </span>
       </div>
       <p className="text-sm">Taxes and shipping calculated at checkout.</p>

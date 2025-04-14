@@ -2,6 +2,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   addProductToCart as apiAddProductToCart,
   removeCartItem as apiRemoveCartItem,
+  updateItemQuantity as apiUpdateItemQuantity,
 } from "@/lib/actions";
 import { fetchCartItems } from "@/lib/data";
 import { CartContextType, CartItem, Product } from "@/lib/definitions";
@@ -13,34 +14,38 @@ const CartContext = createContext<CartContextType>({} as CartContextType);
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isUpdatingProduct, setIsUpdatingProduct] = useState(false);
+  const [currentUpdatingProduct, setCurrentUpdatingProduct] = useState<
+    string | null
+  >(null);
   const { user } = useUser();
   const email = user?.emailAddresses[0]?.emailAddress;
 
   // Initialize cart items from strapi
-  useEffect(() => {
-    async function fetchCart() {
-      if (!email) return;
-      try {
-        setLoading(true);
-        // fetch cart items from strapi
-        const items = await fetchCartItems(email);
-        setCartItems(items);
-      } catch (error) {
-        console.error("Error fetching cart items:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCart();
-  }, [email]);
-
-  // Add item to cart
-  const addProductToCart = async (product: Product) => {
+  async function fetchCart() {
+    if (!email) return;
     try {
       setLoading(true);
+      // fetch cart items from strapi
+      const items = await fetchCartItems(email);
+      setCartItems(items);
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
+  useEffect(() => {
+    fetchCart();
+  }, [user]);
+
+  // Add item to cart
+  const addProductToCart = async (product: Product, quantity: number) => {
+    try {
+      setIsUpdatingProduct(true);
       // Add product to Strapi and get the response
-      const res = await apiAddProductToCart(email, product);
+      const res = await apiAddProductToCart(email, quantity, product);
 
       // Simulate delay for 1 second
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -54,7 +59,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         if (existingItem) {
           return prevItems.map((item) =>
             item.product.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
+              ? { ...item, quantity: item.quantity + quantity }
               : item
           );
         } else {
@@ -62,7 +67,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           const newItem = {
             id: res.data.id,
             documentId: res.data.documentId,
-            quantity: 1,
+            quantity: quantity,
             product: product,
           };
           return [...prevItems, newItem];
@@ -84,7 +89,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
             : "An unexpected error occurred",
       });
     } finally {
-      setLoading(false);
+      setIsUpdatingProduct(false);
     }
   };
 
@@ -96,11 +101,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       setCartItems((prevItems) =>
         prevItems.filter((item) => item.documentId !== itemId)
       );
-      // Show success toast notification
-      toast({
-        title: "Item removed",
-        description: "Item has been removed from your cart",
-      });
     } catch (error) {
       toast({
         title: "Error removing item",
@@ -112,6 +112,38 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // Update item quantity
+  const updateItemQuantity = async (itemId: string, quantity: number) => {
+    try {
+      setIsUpdatingProduct(true);
+      setCurrentUpdatingProduct(itemId);
+      // Add product to Strapi and get the response
+      const res = await apiUpdateItemQuantity(itemId, quantity);
+
+      // Simulate delay for 1 second
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Update cart items in context
+      setCartItems((prevItems) =>
+        prevItems.map((item) =>
+          item.documentId === itemId
+            ? { ...item, quantity: res.data.quantity }
+            : item
+        )
+      );
+    } catch (error: unknown) {
+      // Show error toast notification
+      toast({
+        title: "Error updating item",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      });
+    } finally {
+      setIsUpdatingProduct(false);
+    }
+  };
   // Get total cart count
   const getCartCount = () => {
     return cartItems?.reduce((total, item) => total + item.quantity, 0);
@@ -128,9 +160,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         cartItems,
         addProductToCart,
         removeCartItem,
+        updateItemQuantity,
         getCartCount,
         clearCart,
         loading,
+        isUpdatingProduct,
+        currentUpdatingProduct,
       }}
     >
       {children}

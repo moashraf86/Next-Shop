@@ -14,10 +14,6 @@ export default function Header() {
   const { user } = useUser();
   const isSignedIn = !!user;
   const { cartItems, getCartCount } = useCart();
-  console.log("cartItems", cartItems);
-
-  // get car count
-  console.log("cart count", getCartCount());
 
   return (
     <header
@@ -89,7 +85,7 @@ export default function Header() {
               <ShoppingBag className="block size-5 text-inherit" />
               <span>
                 {cartItems?.length > 0 && (
-                  <span className="absolute -top-[2px] -right-[2px] flex items-center justify-center w-4 h-4 text-xs font-medium text-white bg-red-500 rounded-full">
+                  <span className="absolute -top-0.5 -right-1.5 flex items-center justify-center ps-1 pe-1 text-[10px] font-medium text-white bg-primary rounded-full">
                     {getCartCount()}
                   </span>
                 )}

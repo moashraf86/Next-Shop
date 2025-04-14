@@ -42,6 +42,7 @@ export const createCart = async (data: {
 // [2] add product to cart
 export const addProductToCart = async (
   email: string | undefined,
+  quantity: number,
   product: Product
 ) => {
   try {
@@ -89,7 +90,7 @@ export const addProductToCart = async (
           },
           body: JSON.stringify({
             data: {
-              quantity: existingCartItem.quantity + 1,
+              quantity: existingCartItem.quantity + quantity,
             },
           }),
         }
@@ -116,7 +117,7 @@ export const addProductToCart = async (
           },
           body: JSON.stringify({
             data: {
-              quantity: 1,
+              quantity: quantity,
               cart: cart.id,
               product: product.id,
             },
@@ -172,6 +173,52 @@ export const removeCartItem = async (cartItemId: string) => {
       console.error("Error in removeCartItem:", error.message);
     } else {
       console.error("Error in removeCartItem:", error);
+    }
+    throw error;
+  }
+};
+
+// [4] increase product quantity
+export const updateItemQuantity = async (
+  cartItemId: string,
+  quantity: number
+) => {
+  try {
+    // update cart item quantity
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/cart-items/${cartItemId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+        body: JSON.stringify({
+          data: {
+            quantity,
+          },
+        }),
+      }
+    );
+
+    console.log("updateItemQuantity", res.url);
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(
+        `Failed to update cart item quantity: ${
+          errorData.error || "Unknown error"
+        }`
+      );
+    }
+
+    const updatedCartItem = await res.json();
+    return updatedCartItem;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in increaseProductQuantity:", error.message);
+    } else {
+      console.error("Error in increaseProductQuantity:", error);
     }
     throw error;
   }

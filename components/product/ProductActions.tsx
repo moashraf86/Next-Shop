@@ -5,10 +5,15 @@ import { toast } from "@/hooks/use-toast";
 import { Product } from "@/lib/definitions";
 import { useUser } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
-export default function ProductActions({ product }: { product: Product }) {
+export default function ProductActions({
+  product,
+  quantity,
+}: {
+  product: Product;
+  quantity: number;
+}) {
   const { user } = useUser();
-  const { addProductToCart, loading } = useCart();
-  console.log(loading);
+  const { addProductToCart, isUpdatingProduct } = useCart();
 
   const handleAddToCart = () => {
     // check if user is signed in
@@ -20,7 +25,7 @@ export default function ProductActions({ product }: { product: Product }) {
       return;
     }
     // add product to cart
-    addProductToCart(product);
+    addProductToCart(product, quantity);
   };
 
   const handleBuyNow = () => {
@@ -42,9 +47,9 @@ export default function ProductActions({ product }: { product: Product }) {
         onClick={handleAddToCart}
         variant="success"
         size="lg"
-        disabled={loading}
+        disabled={isUpdatingProduct}
       >
-        {loading ? (
+        {isUpdatingProduct ? (
           <span>
             <Loader2 className="animate-spin" />
           </span>

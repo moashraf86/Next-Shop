@@ -4,6 +4,9 @@ import { CartItem as CartItemType } from "@/lib/definitions";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import QuantitySelector from "../shared/QuantitySelector";
+import React, { useState } from "react";
+import { useCart } from "@/app/context/CartContext";
 
 export default function CartItem({
   item,
@@ -16,6 +19,20 @@ export default function CartItem({
   className?: string;
   style?: React.CSSProperties;
 }) {
+  const [quantity, setQuantity] = useState(item.quantity);
+  const { updateItemQuantity, isUpdatingProduct, currentUpdatingProduct } =
+    useCart();
+
+  // check if the updating product is the same as the current item
+  const isUpdating =
+    isUpdatingProduct && currentUpdatingProduct === item.documentId;
+
+  // handle add to cart
+  const handleUpdateProduct = (newQuantity: number) => {
+    updateItemQuantity(item.documentId, newQuantity);
+    setQuantity(newQuantity);
+  };
+
   return (
     <tr className={cn("font-light", className)} style={style}>
       <td className="px-6 py-4 text-sm font-medium text-gray-800">
@@ -27,17 +44,24 @@ export default function CartItem({
             height={100}
             className="object-cover object-center sm:aspect-square"
           />
-          <div className="space-y-1 sm:space-y-2 font-light">
+          <div className="space-y-2 sm:space-y-2 font-light">
             <h2 className="text-base font-barlow leading-tight">
               {item.product?.title}
             </h2>
-            <p>Qty: {item.quantity}</p>
             <ProductPrice
               price={item.product?.price}
               className="hidden sm:block"
             />
             <ProductPrice
               price={item.product?.price * item.quantity}
+              className="sm:hidden"
+            />
+            <QuantitySelector
+              quantity={quantity}
+              mode="cart"
+              setQuantity={setQuantity}
+              onUpdateCart={handleUpdateProduct}
+              isUpdating={isUpdating}
               className="sm:hidden"
             />
             <Button
@@ -51,7 +75,13 @@ export default function CartItem({
         </div>
       </td>
       <td className="px-6 py-4 text-sm text-center hidden sm:table-cell">
-        {item.quantity}
+        <QuantitySelector
+          quantity={quantity}
+          mode="cart"
+          setQuantity={setQuantity}
+          onUpdateCart={handleUpdateProduct}
+          isUpdating={isUpdating}
+        />
       </td>
       <td className="px-6 py-4 text-sm text-center hidden sm:table-cell">
         <ProductPrice price={item.product?.price * item.quantity} />
