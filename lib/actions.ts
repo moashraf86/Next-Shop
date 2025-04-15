@@ -42,6 +42,7 @@ export const createCart = async (data: {
 // [2] add product to cart
 export const addProductToCart = async (
   email: string | undefined,
+	username: string,
   quantity: number,
   product: Product
 ) => {
@@ -66,7 +67,7 @@ export const addProductToCart = async (
 
     if (!cart) {
       // Create a new cart if none exists
-      const newCart = await createCart({ username: "Guest", email });
+      const newCart = await createCart({ username, email });
       cart = newCart.data;
     }
 

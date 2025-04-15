@@ -20,10 +20,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   >(null);
   const { user } = useUser();
   const email = user?.emailAddresses[0]?.emailAddress;
+  const username = user?.fullName;
 
   // Initialize cart items from strapi
   async function fetchCart() {
-    if (!email) return;
+    if (!email) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       // fetch cart items from strapi
@@ -45,7 +49,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setIsUpdatingProduct(true);
       // Add product to Strapi and get the response
-      const res = await apiAddProductToCart(email, quantity, product);
+      if (!email || !username) {
+        throw new Error("User email or username is missing");
+      }
+      const res = await apiAddProductToCart(email, username, quantity, product);
 
       // Simulate delay for 1 second
       await new Promise((resolve) => setTimeout(resolve, 1000));

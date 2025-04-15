@@ -85,7 +85,7 @@ export default function Header() {
               <ShoppingBag className="block size-5 text-inherit" />
               <span>
                 {cartItems?.length > 0 && (
-                  <span className="absolute -top-0.5 -right-1.5 flex items-center justify-center ps-1 pe-1 text-[10px] font-medium text-white bg-primary rounded-full">
+                  <span className="absolute top-0 -right-1 flex items-center justify-center min-w-4 min-h-4 ps-1 pe-1 text-[9px] font-medium text-white bg-primary rounded-full">
                     {getCartCount()}
                   </span>
                 )}

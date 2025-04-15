@@ -81,6 +81,7 @@ export default function CartItem({
           setQuantity={setQuantity}
           onUpdateCart={handleUpdateProduct}
           isUpdating={isUpdating}
+          className="mx-auto"
         />
       </td>
       <td className="px-6 py-4 text-sm text-center hidden sm:table-cell">
