@@ -42,7 +42,7 @@ export const createCart = async (data: {
 // [2] add product to cart
 export const addProductToCart = async (
   email: string | undefined,
-	username: string,
+  username: string,
   quantity: number,
   product: Product
 ) => {
@@ -220,6 +220,59 @@ export const updateItemQuantity = async (
       console.error("Error in increaseProductQuantity:", error.message);
     } else {
       console.error("Error in increaseProductQuantity:", error);
+    }
+    throw error;
+  }
+};
+
+// [5] create order
+export const createOrder = async (data: {
+  name: string;
+  email: string | undefined;
+  amount: number;
+  products: number[];
+  payment_id?: string;
+  order_number?: string;
+}) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/orders`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+        body: JSON.stringify({
+          data: {
+            name: data.name,
+            email: data.email,
+            amount: data.amount,
+            products: data.products,
+            payment_id: data.payment_id,
+            order_number: `ORD-${crypto
+              .randomUUID()
+              .split("-")[0]
+              .toUpperCase()}`,
+          },
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(
+        `Failed to create order: ${errorData.error || "Unknown error"}`
+      );
+    }
+
+    const response = await res.json();
+    return response;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in createOrder:", error.message);
+    } else {
+      console.error("Error in createOrder:", error);
     }
     throw error;
   }

@@ -8,6 +8,9 @@ import {
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { Input } from "../ui/input";
+import { useCart } from "@/app/context/CartContext";
+import { createOrder } from "@/lib/actions";
+import { useUser } from "@clerk/nextjs";
 
 export default function CheckoutForm({
   clientSecret,
@@ -17,6 +20,10 @@ export default function CheckoutForm({
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
+  const { cartItems } = useCart();
+  const { user } = useUser();
+  const email = user?.emailAddresses[0]?.emailAddress;
+  const name = user?.fullName;
 
   // handle submit
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -41,6 +48,7 @@ export default function CheckoutForm({
       confirmParams: {
         return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-confirm`,
       },
+      redirect: "if_required",
     });
 
     if (result.error) {
@@ -48,10 +56,24 @@ export default function CheckoutForm({
       setLoading(false);
       return;
     } else {
-      console.log("Payment result:", result);
-      // handle clear cart
+      console.log("Payment result:", result.paymentIntent);
+      const paymentId = result.paymentIntent.id;
+      const paymentAmount = result.paymentIntent.amount;
+      handleCreateOrder(paymentAmount, paymentId);
     }
     setLoading(false);
+  };
+
+  // handle create order
+  const handleCreateOrder = (amount: number, id: string) => {
+    const productsIds = cartItems.map((item) => item.product.id);
+    createOrder({
+      name: name || "guest",
+      email: email,
+      amount: amount / 100,
+      products: productsIds,
+      payment_id: id,
+    });
   };
 
   return (
