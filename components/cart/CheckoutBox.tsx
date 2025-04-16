@@ -31,7 +31,9 @@ export default function CheckoutBox({
       {/* Order notes */}
       <Textarea placeholder="Order notes" />
       <Button asChild variant="emphasis" className="w-full" size="lg">
-        <Link href="/checkout">Checkout</Link>
+        <Link href={`checkout?amount=${calculateTotalPrice(cartItems)}`}>
+          Checkout
+        </Link>
       </Button>
     </div>
   );
