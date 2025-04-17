@@ -1,16 +1,18 @@
 "use client";
 
 import {
+  AddressElement,
   PaymentElement,
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import { Input } from "../ui/input";
-import { useCart } from "@/app/context/CartContext";
 import { createOrder } from "@/lib/actions";
 import { useUser } from "@clerk/nextjs";
+import { useCart } from "@/app/context/CartContext";
+import { useRouter } from "next/navigation";
+import { Address } from "@/lib/definitions";
 
 export default function CheckoutForm({
   clientSecret,
@@ -20,10 +22,11 @@ export default function CheckoutForm({
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
-  const { cartItems } = useCart();
+  const { clearCart } = useCart();
   const { user } = useUser();
   const email = user?.emailAddresses[0]?.emailAddress;
   const name = user?.fullName;
+  const router = useRouter();
 
   // handle submit
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -47,6 +50,11 @@ export default function CheckoutForm({
       clientSecret,
       confirmParams: {
         return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-confirm`,
+        payment_method_data: {
+          billing_details: {
+            // billing details goes here
+          },
+        },
       },
       redirect: "if_required",
     });
@@ -59,45 +67,48 @@ export default function CheckoutForm({
       console.log("Payment result:", result.paymentIntent);
       const paymentId = result.paymentIntent.id;
       const paymentAmount = result.paymentIntent.amount;
-      handleCreateOrder(paymentAmount, paymentId);
+      const shippingAddress = result.paymentIntent.shipping?.address;
+      // Create order
+      handleCreateOrder(paymentAmount, paymentId, shippingAddress);
+      clearCart();
+      // Redirect to success page
+      router.push("/payment-confirm");
+      router.refresh();
     }
     setLoading(false);
   };
 
   // handle create order
-  const handleCreateOrder = (amount: number, id: string) => {
-    const productsIds = cartItems.map((item) => item.product.id);
+  const handleCreateOrder = (
+    amount: number,
+    paymentId: string,
+    shippingAddress: Address | undefined
+  ) => {
     createOrder({
       name: name || "guest",
       email: email,
       amount: amount / 100,
-      products: productsIds,
-      payment_id: id,
+      payment_id: paymentId,
+      shipping_address: shippingAddress,
     });
   };
 
   return (
     <form id="checkout" onSubmit={handleSubmit} className="space-y-6 p-6">
-      {/* Contact */}
+      {/* Shipping */}
       <section className="space-y-3">
         <h2 className="text-xl  font-light uppercase tracking-tight">
-          Contact
+          Shipping
         </h2>
-        <Input type="email" placeholder="Email" />
-      </section>
-      {/* Delivery */}
-      <section className="space-y-3">
-        <h2 className="text-xl  font-light uppercase tracking-tight">
-          Delivery
-        </h2>
-        <Input type="text" placeholder="Full Name" />
-        <Input type="text" placeholder="Address" />
-        <div className="flex gap-2">
-          <Input type="text" placeholder="City" />
-          <Input type="text" placeholder="State" />
-          <Input type="text" placeholder="Zip Code" />
-        </div>
-        <Input type="text" placeholder="Phone" />
+        <p className="text-sm">Delivery time: 3-5 business days</p>
+        <AddressElement
+          options={{
+            mode: "shipping",
+            fields: {
+              phone: "always",
+            },
+          }}
+        />
       </section>
       {/* Payment */}
       <section className="space-y-3">

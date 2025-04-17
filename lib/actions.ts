@@ -1,4 +1,4 @@
-import { CartItem, Product } from "./definitions";
+import { Address, CartItem, Product } from "./definitions";
 
 // [1] create cart entry
 export const createCart = async (data: {
@@ -230,12 +230,33 @@ export const createOrder = async (data: {
   name: string;
   email: string | undefined;
   amount: number;
-  products: number[];
   payment_id?: string;
   order_number?: string;
+  shipping_address: Address | undefined;
 }) => {
   try {
-    const res = await fetch(
+    // 1. Fetch the user's cart and its items
+    const cartRes = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/carts?filters[email][$eq]=${data.email}&populate[cart_items][populate]=product`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+      }
+    );
+
+    if (!cartRes.ok) throw new Error("Failed to fetch cart");
+
+    const cartData = await cartRes.json();
+
+    const cart = cartData.data[0];
+
+    if (!cart) throw new Error("Cart not found");
+
+    const cartItems = cart.cart_items || [];
+
+    // 2. Create the order
+    const orderRes = await fetch(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/orders`,
       {
         method: "POST",
@@ -248,32 +269,81 @@ export const createOrder = async (data: {
             name: data.name,
             email: data.email,
             amount: data.amount,
-            products: data.products,
             payment_id: data.payment_id,
             order_number: `ORD-${crypto
               .randomUUID()
               .split("-")[0]
               .toUpperCase()}`,
+            shipping_address: data.shipping_address || "No address provided",
           },
         }),
       }
     );
 
-    if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(
-        `Failed to create order: ${errorData.error || "Unknown error"}`
-      );
+    if (!orderRes.ok) {
+      const errorData = await orderRes.json();
+      throw new Error(`Failed to create order: ${errorData.error}`);
     }
 
-    const response = await res.json();
-    return response;
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("Error in createOrder:", error.message);
-    } else {
-      console.error("Error in createOrder:", error);
+    const order = await orderRes.json();
+    const orderId = order.data.id;
+
+    // 3. Create order items
+    for (const cartItem of cartItems) {
+      const product = cartItem.product;
+      const quantity = cartItem.quantity;
+      const price = product.price;
+      const total = price * quantity;
+
+      if (!product) continue; // Skip invalid products
+
+      // Create OrderItem
+      await fetch(`${process.env.NEXT_PUBLIC_STRAPI_API_URL}/order-items`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+        body: JSON.stringify({
+          data: {
+            quantity,
+            price,
+            total,
+            product: product.id,
+            order: orderId,
+          },
+        }),
+      });
     }
+
+    // 5. Clean up: Delete cart items and cart
+    for (const item of cartItems) {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/cart-items/${item.documentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+          },
+        }
+      );
+    }
+    await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/carts/${cart.documentId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+      }
+    );
+
+    // 6. Return the created order
+    console.log("Order created successfully:", order);
+
+    return order;
+  } catch (error: unknown) {
+    console.error("Error creating order:", error);
     throw error;
   }
 };
