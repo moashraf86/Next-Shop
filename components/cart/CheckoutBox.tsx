@@ -2,11 +2,16 @@ import { CartItem as CartItemType } from "@/lib/definitions";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 export default function CheckoutBox({
   cartItems,
 }: {
   cartItems: CartItemType[];
 }) {
+  const { user } = useUser();
+  const email = user?.emailAddresses[0]?.emailAddress;
+  const name = user?.fullName;
+
   // Helper function to calculate the total price
   const calculateTotalPrice = (cartItems: CartItemType[]) => {
     return cartItems.reduce((total, item) => {
@@ -31,7 +36,12 @@ export default function CheckoutBox({
       {/* Order notes */}
       <Textarea placeholder="Order notes" />
       <Button asChild variant="emphasis" className="w-full" size="lg">
-        <Link href={`checkout?amount=${calculateTotalPrice(cartItems)}`}>
+        <Link
+          prefetch={false}
+          href={`checkout?amount=${calculateTotalPrice(
+            cartItems
+          )}&email=${email}&name=${name}`}
+        >
           Checkout
         </Link>
       </Button>

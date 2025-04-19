@@ -1,7 +1,7 @@
 "use client";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
 import { Elements } from "@stripe/react-stripe-js";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useSearchParams } from "next/navigation";
 
@@ -13,11 +13,15 @@ const stripePromise = loadStripe(
 export default function Checkout() {
   const [clientSecret, setClientSecret] = useState("");
 
-  // get amount from searchParams
+  // get amount, email, name from searchParams
   const searchParams = useSearchParams();
   const amount = searchParams.get("amount");
+  const email = searchParams.get("email");
+  const name = searchParams.get("name");
 
-  // Function to fetch the client secret from the server
+  const hasFechedRef = useRef(false);
+
+  // fetch client secret
   const fetchClientSecret = async () => {
     try {
       const response = await fetch("/api/create-payment-intent", {
@@ -25,7 +29,11 @@ export default function Checkout() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ amount: amount }), // Example amount
+        body: JSON.stringify({
+          amount,
+          email,
+          name,
+        }),
       });
 
       if (!response.ok) {
@@ -40,8 +48,13 @@ export default function Checkout() {
   };
 
   useEffect(() => {
+    // Check if the client secret has already been fetched
+    if (hasFechedRef.current) return;
+    hasFechedRef.current = true;
+
+    // Fetch the client secret when the component mounts
     fetchClientSecret();
-  }, []);
+  }, [amount, email, name]);
 
   if (!clientSecret) {
     return <div>Loading...</div>;
