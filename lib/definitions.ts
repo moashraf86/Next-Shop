@@ -31,6 +31,7 @@ interface StrapiImage {
     small: StrapiImageFormat;
     thumbnail: StrapiImageFormat;
   };
+  name: string;
 }
 
 interface StrapiImageFormat {
@@ -70,6 +71,16 @@ export interface CartItem {
   product: Product;
 }
 
+export interface OrderItem {
+  createdAt: string;
+  documentId: string;
+  id: number;
+  price: number;
+  product: Product;
+  quantity: number;
+  total: number;
+  updatedAt: string;
+}
 export interface CartContextType {
   cartItems: CartItem[];
   addProductToCart: (product: Product, quantity: number) => void;
@@ -112,4 +123,55 @@ export interface Address {
    * State/County/Province/Region.
    */
   state: string | null;
+}
+
+interface PaymentCard {
+  brand: string;
+  checks: {
+    address_line1_check: string;
+    address_postal_code_check: string;
+    cvc_check: string;
+  };
+  country: string;
+  display_brand: string;
+  exp_month: number;
+  exp_year: number;
+  fingerprint: string;
+  funding: string;
+  generated_from: any | null;
+  networks: {
+    available: string[];
+    preferred: string | null;
+  };
+  regulated_status: string;
+  three_d_secure_usage: {
+    supported: boolean;
+  };
+  wallet: any | null;
+}
+
+interface BillingDetails {
+  address: {
+    city?: string | null;
+    country?: string | null;
+    line1?: string | null;
+    line2?: string | null;
+    postal_code?: string | null;
+    state?: string | null;
+  };
+  email: string | null;
+  name: string | null;
+  phone: string | null;
+  tax_id?: string | null;
+}
+export interface PaymentMethod {
+  id: string;
+  object: "payment_method";
+  type: "card";
+  livemode: boolean;
+  created: number;
+  customer: string | null;
+  metadata: Record<string, string>;
+  card: PaymentCard;
+  billing_details: BillingDetails;
 }

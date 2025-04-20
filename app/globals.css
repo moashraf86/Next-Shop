@@ -67,7 +67,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-barlow;
   }
   h1,
   h2,
@@ -75,6 +75,15 @@
   h4,
   h5,
   h6 {
+    @apply text-primary font-jost;
+  }
+
+  p,
+  span {
+    @apply font-barlow;
+  }
+
+  a {
     @apply text-primary;
   }
 

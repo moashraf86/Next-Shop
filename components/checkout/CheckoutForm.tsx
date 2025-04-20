@@ -12,7 +12,7 @@ import { createOrder } from "@/lib/actions";
 import { useUser } from "@clerk/nextjs";
 import { useCart } from "@/app/context/CartContext";
 import { useRouter } from "next/navigation";
-import { Address } from "@/lib/definitions";
+import { Address, PaymentMethod } from "@/lib/definitions";
 
 export default function CheckoutForm({
   clientSecret,
@@ -50,11 +50,6 @@ export default function CheckoutForm({
       clientSecret,
       confirmParams: {
         return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-confirm`,
-        payment_method_data: {
-          billing_details: {
-            // billing details goes here
-          },
-        },
       },
       redirect: "if_required",
     });
@@ -64,33 +59,49 @@ export default function CheckoutForm({
       setLoading(false);
       return;
     } else {
-      console.log("Payment result:", result.paymentIntent);
-      const paymentId = result.paymentIntent.id;
+      console.log("Payment result:", result);
       const paymentAmount = result.paymentIntent.amount;
+      const paymentId = result.paymentIntent.id;
       const shippingAddress = result.paymentIntent.shipping?.address;
+      const paymentMethodId = result.paymentIntent.payment_method;
+
+      // Get payment method data
+      const paymentMethodResponse = await fetch(
+        `/api/get-payment-method?paymentMethodId=${paymentMethodId}`
+      );
+      const { paymentMethod } = await paymentMethodResponse.json();
+
       // Create order
-      handleCreateOrder(paymentAmount, paymentId, shippingAddress);
+      const order = await handleCreateOrder(
+        paymentAmount,
+        paymentId,
+        shippingAddress,
+        paymentMethod
+      );
       clearCart();
       // Redirect to success page
-      router.push("/payment-confirm");
+      router.push("/payment-confirm?orderId=" + order.data.documentId);
       router.refresh();
     }
     setLoading(false);
   };
 
   // handle create order
-  const handleCreateOrder = (
+  const handleCreateOrder = async (
     amount: number,
     paymentId: string,
-    shippingAddress: Address | undefined
+    shippingAddress: Address | undefined,
+    paymentMethod: PaymentMethod
   ) => {
-    createOrder({
+    const order = await createOrder({
       name: name || "guest",
       email: email,
       amount: amount / 100,
       payment_id: paymentId,
       shipping_address: shippingAddress,
+      payment_method: paymentMethod,
     });
+    return order;
   };
 
   return (

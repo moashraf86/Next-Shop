@@ -1,4 +1,4 @@
-import { Address, CartItem, Product } from "./definitions";
+import { Address, CartItem, PaymentMethod, Product } from "./definitions";
 
 // [1] create cart entry
 export const createCart = async (data: {
@@ -230,9 +230,10 @@ export const createOrder = async (data: {
   name: string;
   email: string | undefined;
   amount: number;
-  payment_id?: string;
+  payment_id: string;
   order_number?: string;
   shipping_address: Address | undefined;
+  payment_method: PaymentMethod;
 }) => {
   try {
     // 1. Fetch the user's cart and its items
@@ -270,11 +271,9 @@ export const createOrder = async (data: {
             email: data.email,
             amount: data.amount,
             payment_id: data.payment_id,
-            order_number: `ORD-${crypto
-              .randomUUID()
-              .split("-")[0]
-              .toUpperCase()}`,
+            order_number: `${crypto.randomUUID().split("-")[0].toUpperCase()}`,
             shipping_address: data.shipping_address || "No address provided",
+            payment_method: data.payment_method,
           },
         }),
       }
