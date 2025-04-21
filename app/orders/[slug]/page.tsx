@@ -19,8 +19,7 @@ export default async function OrderDetails({
     <section className="container max-w-screen-lg mx-auto">
       <div className="space-y-2 py-10">
         <h1 className="text-4xl font-light uppercase text-center tracking-tight">
-          Order #{}
-          <span className="font-semibold">{order.order_number}</span>
+          Order #<span className="font-semibold">{order.order_number}</span>
         </h1>
         <p className="text-center">
           Check the status of your order, manage returns, and discover

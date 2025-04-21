@@ -16,7 +16,13 @@ export default function Orders() {
   const fetchOrdersData = async () => {
     try {
       const { data } = await fetchOrders(email);
-      setOrders(data);
+      // sort orders by createdAt in descending order
+      const sortedOrders = data.sort((a: Order, b: Order) => {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+      setOrders(sortedOrders);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }

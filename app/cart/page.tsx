@@ -35,9 +35,9 @@ export default function CartPage() {
             </span>
             <ShoppingBag className="size-12" />
           </div>
-          <p className="text-4xl font-light">Your cart is empty</p>
+          <p className="text-2xl font-light">Your cart is empty</p>
           <Button asChild variant="emphasis" className="w-full" size="lg">
-            <Link href="/">Continue Shopping</Link>
+            <Link href="/">Start Shopping</Link>
           </Button>
         </div>
       </section>
