@@ -168,3 +168,34 @@ export const fetchOrderById = async (id: string) => {
     throw error;
   }
 };
+
+// [7] fetch all orders
+export const fetchOrders = async (email: string | undefined) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/orders?filters[email][$eq]=${email}&populate[order_items][populate][product][populate]=*`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(
+        `Failed to fetch orders: ${errorData.error || "Unknown error"}`
+      );
+    }
+
+    const response = await res.json();
+    return response;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in fetchOrders:", error.message);
+    } else {
+      console.error("Error in fetchOrders:", error);
+    }
+    throw error;
+  }
+};

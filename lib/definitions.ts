@@ -175,3 +175,19 @@ export interface PaymentMethod {
   card: PaymentCard;
   billing_details: BillingDetails;
 }
+
+export interface Order {
+  amount: number;
+  createdAt: string;
+  documentId: string;
+  email: string;
+  id: number;
+  name: string;
+  order_items: OrderItem[];
+  order_number: string;
+  payment_id: string;
+  payment_method: PaymentMethod;
+  publishedAt: string;
+  shipping_address: Address;
+  updatedAt: string;
+}

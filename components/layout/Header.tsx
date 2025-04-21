@@ -38,6 +38,11 @@ export default function Header() {
                 Collections
               </Link>
             </li>
+            <li>
+              <Link className="text-inherit text-[15px]" href="/orders">
+                My Orders
+              </Link>
+            </li>
           </ul>
           {/* Menu Toggler */}
           <Button
