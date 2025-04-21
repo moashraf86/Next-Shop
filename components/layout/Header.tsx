@@ -7,13 +7,13 @@ import Logo from "./Logo";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { useCart } from "@/app/context/CartContext";
+import { useCart } from "@/hooks/useCart";
 
 export default function Header() {
   const pathname = usePathname();
   const { user } = useUser();
   const isSignedIn = !!user;
-  const { cartItems, getCartCount } = useCart();
+  const { cartItems, getTotalItems } = useCart();
 
   return (
     <header
@@ -91,7 +91,7 @@ export default function Header() {
               <span>
                 {cartItems?.length > 0 && (
                   <span className="absolute top-0 -right-1 flex items-center justify-center min-w-4 min-h-4 ps-1 pe-1 text-[9px] font-medium text-white bg-primary rounded-full">
-                    {getCartCount()}
+                    {getTotalItems()}
                   </span>
                 )}
               </span>

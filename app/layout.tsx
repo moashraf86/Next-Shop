@@ -6,7 +6,6 @@ import Header from "@/components/layout/Header";
 import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
-import { CartProvider } from "./context/CartContext";
 
 const jost = Jost({
   variable: "--font-jost",
@@ -26,15 +25,13 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider afterSignOutUrl="/sign-in">
-      <CartProvider>
-        <html lang="en">
-          <body className={cn(jost.className, "antialiased")}>
-            <Header />
-            {children}
-            <Toaster />
-          </body>
-        </html>
-      </CartProvider>
+      <html lang="en">
+        <body className={cn(jost.className, "antialiased")}>
+          <Header />
+          {children}
+          <Toaster />
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

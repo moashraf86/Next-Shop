@@ -1,7 +1,7 @@
 "use client";
-import { useCart } from "@/app/context/CartContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { useCart } from "@/hooks/useCart";
 import { Product } from "@/lib/definitions";
 import { useUser } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
@@ -13,7 +13,7 @@ export default function ProductActions({
   quantity: number;
 }) {
   const { user } = useUser();
-  const { addProductToCart, isUpdatingProduct } = useCart();
+  const { addProductToCart, isAdding } = useCart();
 
   const handleAddToCart = () => {
     // check if user is signed in
@@ -47,9 +47,9 @@ export default function ProductActions({
         onClick={handleAddToCart}
         variant="success"
         size="lg"
-        disabled={isUpdatingProduct}
+        disabled={isAdding}
       >
-        {isUpdatingProduct ? (
+        {isAdding ? (
           <span>
             <Loader2 className="animate-spin" />
           </span>

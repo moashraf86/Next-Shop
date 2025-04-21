@@ -1,10 +1,10 @@
 "use client";
-import { useCart } from "../context/CartContext";
 import CartItem from "@/components/cart/CartItem";
 import CartSkeleton from "@/components/cart/CartSkeleton";
 import CartTable from "@/components/cart/CartTable";
 import CheckoutBox from "@/components/cart/CheckoutBox";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/hooks/useCart";
 import { cn } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
@@ -12,7 +12,7 @@ import { useState } from "react";
 
 export default function CartPage() {
   //  fetch cart items
-  const { cartItems, removeCartItem, loading } = useCart();
+  const { cartItems, removeCartItem, isLoading, isEmpty } = useCart();
   const [itemToRemove, setItemToRemove] = useState<string | null>(null);
 
   // Remove cart item
@@ -25,7 +25,7 @@ export default function CartPage() {
   };
 
   // if cart is empty
-  if (cartItems.length === 0 && !loading) {
+  if (isEmpty) {
     return (
       <section className="container max-w-screen-xl h-[calc(100vh-10rem)] flex items-center justify-center">
         <div className="space-y-6 max-w-md mx-auto text-center">
@@ -50,9 +50,9 @@ export default function CartPage() {
         Cart
       </h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {loading && <CartSkeleton />}
+        {isLoading && <CartSkeleton />}
         {/* Cart items */}
-        {!loading && cartItems.length > 0 && (
+        {!isLoading && cartItems.length > 0 && (
           <>
             <div className="space-y-6 col-span-3 lg:col-span-2">
               <CartTable>
@@ -73,7 +73,7 @@ export default function CartPage() {
                 ))}
               </CartTable>
               {/* Cart items count */}
-              {!loading && cartItems.length > 0 && (
+              {!isLoading && cartItems.length > 0 && (
                 <p className="text-sm text-gray-500">
                   {(() => {
                     const totalItems = cartItems.reduce(
@@ -87,7 +87,7 @@ export default function CartPage() {
                 </p>
               )}
             </div>
-            <CheckoutBox cartItems={cartItems} />
+            <CheckoutBox />
           </>
         )}
       </div>

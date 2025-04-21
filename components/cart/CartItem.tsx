@@ -6,7 +6,7 @@ import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import QuantitySelector from "../shared/QuantitySelector";
 import React, { useState } from "react";
-import { useCart } from "@/app/context/CartContext";
+import { useCart } from "@/hooks/useCart";
 
 export default function CartItem({
   item,
@@ -20,12 +20,10 @@ export default function CartItem({
   style?: React.CSSProperties;
 }) {
   const [quantity, setQuantity] = useState(item.quantity);
-  const { updateItemQuantity, isUpdatingProduct, currentUpdatingProduct } =
-    useCart();
+  const { updateItemQuantity, isUpdating, currentUpdatingProduct } = useCart();
 
   // check if the updating product is the same as the current item
-  const isUpdating =
-    isUpdatingProduct && currentUpdatingProduct === item.documentId;
+  const itemUpdating = isUpdating && currentUpdatingProduct === item.documentId;
 
   // handle add to cart
   const handleUpdateProduct = (newQuantity: number) => {
@@ -61,7 +59,7 @@ export default function CartItem({
               mode="cart"
               setQuantity={setQuantity}
               onUpdateCart={handleUpdateProduct}
-              isUpdating={isUpdating}
+              isUpdating={itemUpdating}
               className="sm:hidden"
             />
             <Button

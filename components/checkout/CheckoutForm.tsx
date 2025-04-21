@@ -10,9 +10,9 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import { createOrder } from "@/lib/actions";
 import { useUser } from "@clerk/nextjs";
-import { useCart } from "@/app/context/CartContext";
 import { useRouter } from "next/navigation";
 import { Address, PaymentMethod } from "@/lib/definitions";
+import { useCart } from "@/hooks/useCart";
 
 export default function CheckoutForm({
   clientSecret,
@@ -78,7 +78,7 @@ export default function CheckoutForm({
         shippingAddress,
         paymentMethod
       );
-      clearCart();
+      await clearCart();
       // Redirect to success page
       router.push("/payment-confirm?orderId=" + order.data.documentId);
       router.refresh();
