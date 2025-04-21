@@ -157,6 +157,9 @@ export const fetchOrderById = async (id: string) => {
       );
     }
 
+    // simulate long loading for 2 seconds for development
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const response = await res.json();
     return response;
   } catch (error: unknown) {

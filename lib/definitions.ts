@@ -148,6 +148,7 @@ interface PaymentCard {
     supported: boolean;
   };
   wallet: any | null;
+  last4: string;
 }
 
 interface BillingDetails {

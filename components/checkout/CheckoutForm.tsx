@@ -13,6 +13,7 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Address, PaymentMethod } from "@/lib/definitions";
 import { useCart } from "@/hooks/useCart";
+import { mutate } from "swr";
 
 export default function CheckoutForm({
   clientSecret,
@@ -79,6 +80,7 @@ export default function CheckoutForm({
         paymentMethod
       );
       await clearCart();
+      mutate(["orders", email]);
       // Redirect to success page
       router.push("/payment-confirm?orderId=" + order.data.documentId);
       router.refresh();
