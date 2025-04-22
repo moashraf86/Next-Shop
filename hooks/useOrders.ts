@@ -20,7 +20,7 @@ export const useOrders = () => {
   return {
     orders: orders.data,
     isLoading,
-    isEmpty: orders.data?.length === 0 && !swrLoading,
+    isEmpty: orders.data?.length === 0 || orders.data === undefined,
     error,
   };
 };

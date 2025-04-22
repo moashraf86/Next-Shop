@@ -17,7 +17,7 @@ export default function Orders() {
   });
 
   // Check if orders are still being fetched
-  if (isEmpty) {
+  if (isEmpty && !isLoading) {
     return (
       <div className="container max-w-screen-xl h-[calc(100vh-10rem)] flex items-center justify-center">
         <div className="space-y-6 py-10">
