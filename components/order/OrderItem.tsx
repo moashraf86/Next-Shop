@@ -12,11 +12,8 @@ export default function OrderItem({ item }: { item: OrderItemType }) {
         <td className="p-6 ps-0 text-start text-sm font-medium">
           <div className="flex items-center sm:items-start gap-4">
             <Image
-              src={
-                item.product.images[0].formats?.thumbnail?.url ||
-                item.product.images[0].url
-              }
-              alt={item.product.title}
+              src={item.product.images[0].formats.small.url}
+              alt={item.product.images[0].alternativeText}
               width={100}
               height={100}
               className="sm:aspect-square object-cover object-center rounded"

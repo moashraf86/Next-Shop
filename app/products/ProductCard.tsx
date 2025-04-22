@@ -16,7 +16,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <Image
           className="object-cover group-hover:scale-105 transition-transform duration-300"
           src={product.images[0].url}
-          alt={product.title}
+          alt={product.images[0].alternativeText}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
