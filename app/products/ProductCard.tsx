@@ -15,7 +15,7 @@ export default function ProductCard({ product }: { product: Product }) {
       <div className="aspect-[3/4] relative overflow-hidden bg-gray-100">
         <Image
           className="object-cover group-hover:scale-105 transition-transform duration-300"
-          src={product.image.url}
+          src={product.images[0].url}
           alt={product.title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

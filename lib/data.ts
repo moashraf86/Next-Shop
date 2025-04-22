@@ -118,7 +118,7 @@ export async function fetchProductById(
 // [5] fetch cart products from strapi
 export async function fetchCartItems(email: string | undefined) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/carts?filters[email][$eq]=${email}&populate[cart_items][populate][product][populate]=image`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/carts?filters[email][$eq]=${email}&populate[cart_items][populate][product][populate]=images`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,

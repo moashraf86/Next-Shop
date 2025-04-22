@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import ProductTitle from "./ProductTitle";
 import ProductDescription from "./ProductDescription";
 import ProductPrice from "./ProductPrice";
@@ -8,6 +7,7 @@ import ProductActions from "./ProductActions";
 import ProductCard from "@/app/products/ProductCard";
 import { Product } from "@/lib/definitions";
 import { useState } from "react";
+import ProductCarousel from "./ProductCarousel";
 
 export default function ProductDetails({
   product,
@@ -22,23 +22,20 @@ export default function ProductDetails({
 }) {
   const [quantity, setQuantity] = useState<number>(initialQuantity);
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
-      {/* Product Banner */}
-      <div className="aspect-square relative overflow-hidden bg-gray-100">
-        <Image
-          src={product.image.url}
-          alt={product.image.alternativeText || "Product Image"}
-          fill
-          className="object-cover object-center"
-          quality={100}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 xl:gap-20">
+      {/* Product Carousel */}
+      <ProductCarousel images={product.images} />
       {/* Product details */}
       <div className="space-y-6">
         <ProductTitle title={product.title} />
+        <p className="flex items-center gap-1 text-lg lg:text-2xl  font-normal font-barlow">
+          <ProductPrice
+            price={product.price}
+            className="text-lg lg:text-2xl font-barlow font-normal"
+          />
+          USD
+        </p>
         <ProductDescription description={product.description} />
-        <ProductPrice price={product.price} />
         <QuantitySelector
           quantity={quantity}
           setQuantity={setQuantity}

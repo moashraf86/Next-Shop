@@ -3,7 +3,7 @@ export interface Product {
   documentId: string;
   title: string;
   description: Array<StrapiRichText>;
-  image: StrapiImage;
+  images: StrapiImage[];
   categories: Array<{ name: string }>;
   cart_items: Array<CartItem>;
   price: number;
@@ -20,18 +20,24 @@ interface StrapiRichText {
   type: string;
 }
 
-interface StrapiImage {
-  url: string;
-  height: number;
-  width: number;
+export interface StrapiImage {
   alternativeText: string;
+  caption: string | null;
+  createdAt: string;
+  documentId: string;
+  ext: string;
   formats: {
     large: StrapiImageFormat;
     medium: StrapiImageFormat;
     small: StrapiImageFormat;
     thumbnail: StrapiImageFormat;
   };
+  hash: string;
+  width: number;
+  height: number;
+  id: number;
   name: string;
+  url: string;
 }
 
 interface StrapiImageFormat {
