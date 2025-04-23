@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import QuantitySelector from "../shared/QuantitySelector";
 import React, { useState } from "react";
 import { useCart } from "@/hooks/useCart";
+import Link from "next/link";
 
 export default function CartItem({
   item,
@@ -42,10 +43,14 @@ export default function CartItem({
             height={100}
             className="object-cover object-center sm:aspect-square"
           />
-          <div className="space-y-2 sm:space-y-2 font-light">
-            <h2 className="text-base font-barlow leading-tight">
+          <div className="space-y-2 sm:space-y-2 font-light grow">
+            <Link
+              href={`/products/${item.product.documentId}`}
+              className="text-base font-barlow leading-tight hover:underline underline-offset-2"
+            >
               {item.product?.title}
-            </h2>
+            </Link>
+            <p>{item.variant}</p>
             <ProductPrice
               price={item.product?.price}
               className="hidden sm:block"
@@ -54,21 +59,25 @@ export default function CartItem({
               price={item.product?.price * item.quantity}
               className="sm:hidden"
             />
-            <QuantitySelector
-              quantity={quantity}
-              mode="cart"
-              setQuantity={setQuantity}
-              onUpdateCart={handleUpdateProduct}
-              isUpdating={itemUpdating}
-              className="sm:hidden"
-            />
-            <Button
-              variant="ghost"
-              className="p-0 pt-2 h-auto text-xs text-destructive hover:text-destructive hover:bg-transparent sm:hidden"
-              onClick={() => removeCartItem(item.documentId)}
-            >
-              Remove
-            </Button>
+            <div className="flex items-center justify-between gap-3">
+              <QuantitySelector
+                quantity={quantity}
+                mode="cart"
+                setQuantity={setQuantity}
+                onUpdateCart={handleUpdateProduct}
+                isUpdating={itemUpdating}
+                className={cn("sm:hidden", {
+                  "opacity-50 pointer-events-none": itemUpdating,
+                })}
+              />
+              <Button
+                variant="ghost"
+                className="p-0 h-auto text-xs text-destructive hover:text-destructive hover:bg-transparent sm:hidden"
+                onClick={() => removeCartItem(item.documentId)}
+              >
+                Remove
+              </Button>
+            </div>
           </div>
         </div>
       </td>
@@ -79,7 +88,9 @@ export default function CartItem({
           setQuantity={setQuantity}
           onUpdateCart={handleUpdateProduct}
           isUpdating={isUpdating}
-          className="mx-auto"
+          className={cn("mx-auto", {
+            "opacity-50 pointer-events-none": itemUpdating,
+          })}
         />
       </td>
       <td className="px-6 py-4 text-sm text-center hidden sm:table-cell">

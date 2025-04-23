@@ -15,6 +15,13 @@ export default function CartPage() {
   const { cartItems, removeCartItem, isLoading, isEmpty } = useCart();
   const [itemToRemove, setItemToRemove] = useState<string | null>(null);
 
+  // sorted cart items last added first
+  const sortedCartItems = cartItems.sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  console.log("sortedCartItems", sortedCartItems);
+
   // Remove cart item
   const handleRemoveCartItem = (id: string) => {
     setItemToRemove(id);
@@ -56,7 +63,7 @@ export default function CartPage() {
           <>
             <div className="space-y-6 col-span-3 lg:col-span-2">
               <CartTable>
-                {cartItems.map((item, index) => (
+                {sortedCartItems.map((item, index) => (
                   <CartItem
                     key={item.documentId}
                     item={item}

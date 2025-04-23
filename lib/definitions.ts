@@ -10,6 +10,13 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
+  variantOptions: VariantOption[];
+}
+
+export interface VariantOption {
+  id: number;
+  name: string;
+  values: string[];
 }
 
 interface StrapiRichText {
@@ -75,6 +82,8 @@ export interface CartItem {
   documentId: string;
   quantity: number;
   product: Product;
+  variant: string;
+  createdAt: string;
 }
 
 export interface OrderItem {

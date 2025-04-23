@@ -44,6 +44,7 @@ export const addProductToCart = async (
   email: string | undefined,
   username: string,
   quantity: number,
+  variant: string | null,
   product: Product
 ) => {
   try {
@@ -76,7 +77,8 @@ export const addProductToCart = async (
 
     // Check if the product already exists in the cart
     const existingCartItem = cartItems.find(
-      (item: CartItem) => item.product.id === product.id
+      (item: CartItem) =>
+        item.product.id === product.id && item.variant === variant
     );
 
     if (existingCartItem) {
@@ -119,6 +121,7 @@ export const addProductToCart = async (
           body: JSON.stringify({
             data: {
               quantity: quantity,
+              variant,
               cart: cart.id,
               product: product.id,
             },

@@ -15,6 +15,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
+import VariantSelector from "./VariantSelector";
 
 export default function ProductDetails({
   product,
@@ -28,7 +29,9 @@ export default function ProductDetails({
   initialQuantity?: number;
 }) {
   const [quantity, setQuantity] = useState<number>(initialQuantity);
-  console.log(product);
+  const [selectedVariant, setSelectedVariant] = useState<string>(
+    product.variantOptions[0].values[0]
+  );
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
@@ -38,15 +41,20 @@ export default function ProductDetails({
       <div className="space-y-6 lg:col-span-5">
         <div className="space-y-6 border-b border-border pb-4">
           <ProductTitle title={product.title} />
-          <p className="flex items-center gap-1 text-lg lg:text-2xl  font-normal font-barlow">
+          <div className="flex items-center gap-1 text-lg lg:text-2xl  font-normal font-barlow">
             <ProductPrice
               price={product.price}
               className="text-lg lg:text-2xl font-barlow font-normal"
             />
             USD
-          </p>
+          </div>
           <ProductRating rating={5} reviews={3} />
         </div>
+        <VariantSelector
+          variant={product.variantOptions[0]}
+          selectedVariant={selectedVariant}
+          setSelectedVariant={setSelectedVariant}
+        />
         <div className="space-y-1">
           <span>Quantity:</span>
           <QuantitySelector
@@ -55,7 +63,11 @@ export default function ProductDetails({
             mode="product"
           />
         </div>
-        <ProductActions product={product} quantity={quantity} />
+        <ProductActions
+          product={product}
+          quantity={quantity}
+          selectedVariant={selectedVariant}
+        />
         <Accordion type="single" collapsible>
           <AccordionItem value="description">
             <AccordionTrigger className="text-sm font-barlow uppercase font-semibold tracking-[1px] hover:no-underline">

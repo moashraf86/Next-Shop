@@ -31,11 +31,15 @@ export const useCart = () => {
   const isLoading = swrLoading || !userLoaded;
 
   // 1. add product to cart
-  const addProductToCart = async (product: Product, quantity: number) => {
+  const addProductToCart = async (
+    product: Product,
+    quantity: number,
+    variant: string
+  ) => {
     try {
       if (!email || !username) throw new Error("User email is missing");
       setIsAddingProduct(true);
-      await apiAddProductToCart(email, username, quantity, product);
+      await apiAddProductToCart(email, username, quantity, variant, product);
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast({
         title: "Product added to cart",
