@@ -8,8 +8,15 @@ import {
 } from "../ui/carousel";
 import { useEffect, useState } from "react";
 import CarouselIndicators from "./CarouselIndicators";
+import { cn } from "@/lib/utils";
 
-export default function ProductCarousel({ images }: { images: StrapiImage[] }) {
+export default function ProductCarousel({
+  images,
+  className,
+}: {
+  images: StrapiImage[];
+  className?: string;
+}) {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState<number>(0);
 
@@ -34,7 +41,10 @@ export default function ProductCarousel({ images }: { images: StrapiImage[] }) {
 
   return (
     <Carousel
-      className="w-full flex flex-col-reverse xl:flex-row gap-4"
+      className={cn(
+        "w-full flex flex-col-reverse lg:flex-row gap-4",
+        className
+      )}
       setApi={setApi}
     >
       <CarouselIndicators

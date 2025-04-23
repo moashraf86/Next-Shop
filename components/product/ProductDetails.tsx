@@ -22,11 +22,11 @@ export default function ProductDetails({
 }) {
   const [quantity, setQuantity] = useState<number>(initialQuantity);
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 xl:gap-20">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
       {/* Product Carousel */}
-      <ProductCarousel images={product.images} />
+      <ProductCarousel images={product.images} className="lg:col-span-7" />
       {/* Product details */}
-      <div className="space-y-6">
+      <div className="space-y-6 lg:col-span-5">
         <ProductTitle title={product.title} />
         <p className="flex items-center gap-1 text-lg lg:text-2xl  font-normal font-barlow">
           <ProductPrice
