@@ -36,8 +36,8 @@ export default function CartItem({
       <td className="px-6 py-4 text-sm font-medium text-gray-800">
         <div className="flex items-center gap-4">
           <Image
-            src={item.product.images[0].formats.small.url}
-            alt={item.product.images[0].alternativeText}
+            src={item.product?.images[0].formats.small.url}
+            alt={item.product?.images[0].alternativeText}
             width={100}
             height={100}
             className="object-cover object-center sm:aspect-square"
