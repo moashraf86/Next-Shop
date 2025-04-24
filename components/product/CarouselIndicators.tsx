@@ -17,10 +17,10 @@ export default function CarouselIndicators({
         <button
           key={image.id}
           className={cn(
-            "relative w-full aspect-square sm:w-28 sm:h-32 lg:w-16 lg:h-20 xl:w-20 xl:h-24 p-3",
+            "relative w-full aspect-square sm:w-28 sm:h-32 lg:w-16 lg:h-20 xl:w-20 xl:h-24 p-3 after:absolute after:content-[''] after:inset-[-3px] after:bg-transparent after:border-2 after:border-primary after:z-[-1] after:transition-transform after:duration-200 after:ease",
             {
-              "border-2 border-emphasis": current === index,
-              "border-transparent": current !== index,
+              " after:scale-100 after:opacity-100": current === index,
+              "after:scale-90 after:opacity-0": current !== index,
             }
           )}
           onClick={() => handleScrollToImage(index)}

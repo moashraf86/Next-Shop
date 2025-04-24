@@ -53,7 +53,7 @@ export default function ProductCarousel({
         handleScrollToImage={handleScrollToImage}
       />
       <CarouselContent>
-        {Array.from({ length: 5 }).map((_, index) => (
+        {Array.from({ length: images.length }).map((_, index) => (
           <CarouselItem key={index}>
             <Image
               src={images[index % images.length].url}
