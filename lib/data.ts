@@ -46,9 +46,6 @@ export async function fetchProductsByCategory(
     throw new Error("Failed to fetch products");
   }
 
-  // simulate long loading for 2 seconds
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
   const response: StrapiResponse<Product> = await res.json();
 
   const products = response.data;

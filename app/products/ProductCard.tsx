@@ -10,13 +10,20 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/products/${product.documentId}`}
-      className="group grid gap-4 overflow-hidden"
+      className="grid gap-4 overflow-hidden"
     >
-      <div className="aspect-[3/4] relative overflow-hidden bg-gray-100">
+      <div className="group aspect-[3/4] relative overflow-hidden bg-gray-100">
         <Image
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-          src={product.images[0].url}
+          className="group-hover:opacity-0 object-cover transition-opacity duration-300"
+          src={product.images[0].formats?.large.url || product.images[0].url}
           alt={product.images[0].alternativeText}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+        />
+        <Image
+          className="opacity-0 group-hover:opacity-100 object-cover transition-opacity duration-300"
+          src={product.images[1].url}
+          alt={product.images[1].alternativeText}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
@@ -27,12 +34,8 @@ export default function ProductCard({ product }: { product: Product }) {
         )}
       </div>
       <div className="px-2 space-y-2">
-        <h2 className="text-sm text-center font-light font-barlow">
-          {product.title}
-        </h2>
-        <p className="text-sm text-center font-light">
-          ${product.price.toFixed(2)}
-        </p>
+        <h2 className="text-sm text-center font-barlow">{product.title}</h2>
+        <p className="text-sm text-center">${product.price.toFixed(2)} USD</p>
       </div>
     </Link>
   );

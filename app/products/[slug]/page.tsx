@@ -1,4 +1,4 @@
-import { fetchProductById, fetchProductsByCategory } from "@/lib/data";
+import { fetchProductById } from "@/lib/data";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,6 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import ProductDetails from "@/components/product/ProductDetails";
+import RelatedProducts from "@/components/product/RelatedProducts";
 
 export default async function Product({
   params,
@@ -17,11 +18,6 @@ export default async function Product({
   const { slug } = await params;
   // Fetch product by ID
   const { product } = await fetchProductById(slug);
-
-  // fetch product by categories
-  const relatedProducts = await fetchProductsByCategory(
-    product.categories[0].name
-  );
 
   return (
     <section>
@@ -37,7 +33,8 @@ export default async function Product({
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <ProductDetails product={product} relatedProducts={relatedProducts} />
+        <ProductDetails product={product} />
+        <RelatedProducts product={product} />
       </div>
     </section>
   );

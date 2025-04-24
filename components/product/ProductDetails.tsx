@@ -4,7 +4,6 @@ import ProductDescription from "./ProductDescription";
 import ProductPrice from "./ProductPrice";
 import QuantitySelector from "../shared/QuantitySelector";
 import ProductActions from "./ProductActions";
-import ProductCard from "@/app/products/ProductCard";
 import { Product } from "@/lib/definitions";
 import { useState } from "react";
 import ProductCarousel from "./ProductCarousel";
@@ -19,13 +18,9 @@ import VariantSelector from "./VariantSelector";
 
 export default function ProductDetails({
   product,
-  relatedProducts,
   initialQuantity = 1,
 }: {
   product: Product;
-  relatedProducts: {
-    products: Product[];
-  };
   initialQuantity?: number;
 }) {
   const [quantity, setQuantity] = useState<number>(initialQuantity);
@@ -34,7 +29,7 @@ export default function ProductDetails({
   );
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 mb-20">
       {/* Product Carousel */}
       <ProductCarousel images={product.images} className="lg:col-span-7" />
       {/* Product details */}
@@ -109,18 +104,6 @@ export default function ProductDetails({
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </div>
-      {/* Related products */}
-      <div className="col-span-full mt-8">
-        <h2 className="text-2xl font-bold">Related Products</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          {relatedProducts.products
-            // Filter out the current product
-            .filter((relatedProduct) => relatedProduct.id !== product.id)
-            .map((filteredProduct) => (
-              <ProductCard key={filteredProduct.id} product={filteredProduct} />
-            ))}
-        </div>
       </div>
     </div>
   );
