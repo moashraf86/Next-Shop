@@ -1,5 +1,6 @@
 import { fetchOrderById } from "@/lib/data";
 import { OrderItem } from "@/lib/definitions";
+import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,7 +28,7 @@ export default async function PaymentConfirm({
 
   return (
     <div className="container max-w-xl">
-      <div className="flex flex-col items-start justify-center gap-6 h-[calc(100vh-100px)] mx-auto">
+      <div className="flex flex-col items-start justify-center gap-6 min-h-[calc(100vh-100px)] mx-auto py-10">
         <div className="space-y-3">
           <span className="text-xs text-sky-600 font-barlow font-bold uppercase tracking-widest">
             Payment Successful
@@ -44,15 +45,20 @@ export default async function PaymentConfirm({
             shortly.
           </p>
         </div>
-        <ul className="flex flex-col items-start justify-center w-full space-y-4">
-          {order.order_items.map((item: OrderItem) => (
+        <ul className="flex flex-col items-start justify-center w-full">
+          {order.order_items.map((item: OrderItem, index: number) => (
             <li
               key={item.id}
-              className="flex items-start justify-start w-full py-4 border-y border-border gap-3"
+              className={cn(
+                "flex items-start justify-start w-full py-4 border-b border-border gap-3",
+                {
+                  "border-t": index === 0,
+                }
+              )}
             >
               <Image
-                src={item.product.image.url}
-                alt={item.product.image.name}
+                src={item.product.images[0].formats.small.url}
+                alt={item.product.images[0].name}
                 width={100}
                 height={100}
                 className="aspect-square object-cover rounded"
@@ -65,6 +71,7 @@ export default async function PaymentConfirm({
                 >
                   {item.product.title}
                 </Link>
+                <p>{item.variant}</p>
                 <p>Qty: {item.quantity}</p>
               </div>
               <span className="inline-flex ml-auto">

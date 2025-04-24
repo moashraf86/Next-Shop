@@ -94,6 +94,7 @@ export interface OrderItem {
   product: Product;
   quantity: number;
   total: number;
+  variant: string;
   updatedAt: string;
 }
 export interface CartContextType {

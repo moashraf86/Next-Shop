@@ -296,6 +296,7 @@ export const createOrder = async (data: {
       const quantity = cartItem.quantity;
       const price = product.price;
       const total = price * quantity;
+      const variant = cartItem.variant;
 
       if (!product) continue; // Skip invalid products
 
@@ -311,6 +312,7 @@ export const createOrder = async (data: {
             quantity,
             price,
             total,
+            variant,
             product: product.id,
             order: orderId,
           },
