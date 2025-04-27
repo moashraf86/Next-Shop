@@ -7,7 +7,6 @@ import Link from "next/link";
 export default function OrderItem({ item }: { item: OrderItemType }) {
   return (
     <>
-      {/* {order.order_items.map((item) => ( */}
       <tr className="border-b border-border">
         <td className="p-6 ps-0 text-start text-sm font-medium">
           <div className="flex items-center sm:items-start gap-4">
@@ -21,7 +20,7 @@ export default function OrderItem({ item }: { item: OrderItemType }) {
             />
             <div className="space-y-1 pt-2">
               <h2 className="leading-tight font-light text-base">
-                {item.product.title}
+                {item.product.name}
               </h2>
               <ProductPrice price={item.product.price} className="sm:hidden" />
               <p className="font-light">Qty: {item.quantity}</p>
@@ -31,7 +30,7 @@ export default function OrderItem({ item }: { item: OrderItemType }) {
                 size="sm"
                 className="sm:hidden text-sky-700 p-0"
               >
-                <Link href={`/products/${item.product.documentId}`}>
+                <Link href={`/products/${item.product.slug}`}>
                   View product
                 </Link>
               </Button>
@@ -51,13 +50,10 @@ export default function OrderItem({ item }: { item: OrderItemType }) {
             size="sm"
             className="text-sky-700 px-0 hidden sm:inline-flex"
           >
-            <Link href={`/products/${item.product.documentId}`}>
-              View product
-            </Link>
+            <Link href={`/products/${item.product.slug}`}>View product</Link>
           </Button>
         </td>
       </tr>
-      {/* // ))} */}
     </>
   );
 }
