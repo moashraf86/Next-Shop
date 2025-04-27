@@ -28,6 +28,34 @@ export async function fetchProducts(): Promise<{ products: Product[] }> {
   };
 }
 
+// [2] fetch all related products
+export async function fetchRelatedProducts(
+  cat: string,
+  face: string
+): Promise<{ products: Product[] }> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?populate=*&filters[categories][slug][$eq]=${cat}&[faces][slug][$eq]=${face}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+      },
+      next: { revalidate: 60, tags: [`related-products-${cat}-${face}`] },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch products");
+  }
+
+  const response: StrapiResponse<Product> = await res.json();
+
+  const products = response.data;
+
+  return {
+    products,
+  };
+}
+
 // [2] fetch by category
 export async function fetchProductsByCategory(
   slug: string

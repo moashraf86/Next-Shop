@@ -1,5 +1,5 @@
 import ProductCard from "@/app/products/ProductCard";
-import { fetchProductsByCategory } from "@/lib/data";
+import { fetchRelatedProducts } from "@/lib/data";
 import { Product } from "@/lib/definitions";
 import {
   Carousel,
@@ -20,7 +20,10 @@ export default async function RelatedProducts({
   let relatedProducts;
 
   try {
-    relatedProducts = await fetchProductsByCategory(product.categories[0].slug);
+    relatedProducts = await fetchRelatedProducts(
+      product.categories[0].slug,
+      product.faces[0].slug
+    );
   } catch (error) {
     console.error("Failed to fetch related products:", error);
     return null;
@@ -45,7 +48,7 @@ export default async function RelatedProducts({
         </h2>
         {/* Visible on screens < 1024px */}
         <div className="grid auto-cols-[52vw] md:auto-cols-[35vw] grid-cols-none grid-flow-col gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide lg:hidden">
-          {Array.from({ length: 8 }).map((_, index) => (
+          {Array.from({ length: filteredProducts.length }).map((_, index) => (
             <div key={index} className="snap-center snap-always">
               <ProductCard
                 product={filteredProducts[index % filteredProducts.length]}
@@ -59,7 +62,7 @@ export default async function RelatedProducts({
           opts={{ align: "start", slidesToScroll: 4 }}
         >
           <CarouselContent className="-ml-6">
-            {Array.from({ length: 8 }).map((_, index) => (
+            {Array.from({ length: filteredProducts.length }).map((_, index) => (
               <CarouselItem
                 key={index}
                 className="pl-6 md:basis-1/2 lg:basis-1/4"
