@@ -30,10 +30,10 @@ export async function fetchProducts(): Promise<{ products: Product[] }> {
 
 // [2] fetch by category
 export async function fetchProductsByCategory(
-  category: string
+  slug: string
 ): Promise<{ products: Product[] }> {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?populate=*&filters[categories][name][$eq]=${category}`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?populate=*&filters[categories][slug][$eq]=${slug}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
@@ -86,16 +86,16 @@ export async function fetchBestSellingProducts(
 }
 
 // [4] fetch product by id
-export async function fetchProductById(
-  id: string
+export async function fetchProductBySlug(
+  slug: string
 ): Promise<{ product: Product }> {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products/${id}?populate=*`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products/?filters[slug][$eq]=${slug}&populate=*`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
       },
-      next: { revalidate: 60 },
+      next: { revalidate: 60, tags: [slug] },
     }
   );
 
@@ -103,13 +103,11 @@ export async function fetchProductById(
     throw new Error("Failed to fetch product");
   }
 
-  const response: SingleStrapiResponse<Product> = await res.json();
+  const response: SingleStrapiResponse<Product[]> = await res.json();
 
-  const product = response.data;
+  const product = response.data[0];
 
-  return {
-    product,
-  };
+  return { product };
 }
 
 // [5] fetch cart products from strapi

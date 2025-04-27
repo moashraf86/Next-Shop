@@ -20,8 +20,6 @@ export default function CartPage() {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
-  console.log("sortedCartItems", sortedCartItems);
-
   // Remove cart item
   const handleRemoveCartItem = (id: string) => {
     setItemToRemove(id);

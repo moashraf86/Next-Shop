@@ -1,4 +1,4 @@
-import { fetchProductById } from "@/lib/data";
+import { fetchProductBySlug } from "@/lib/data";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,8 +16,8 @@ export default async function Product({
   params: { slug: string };
 }) {
   const { slug } = await params;
-  // Fetch product by ID
-  const { product } = await fetchProductById(slug);
+  // Fetch product by Slug
+  const { product } = await fetchProductBySlug(slug);
 
   return (
     <section>
@@ -29,7 +29,7 @@ export default async function Product({
             </BreadcrumbItem>
             <BreadcrumbSeparator>/</BreadcrumbSeparator>
             <BreadcrumbItem>
-              <BreadcrumbPage>{product.title}</BreadcrumbPage>
+              <BreadcrumbPage>{product.name}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

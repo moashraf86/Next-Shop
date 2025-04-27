@@ -35,7 +35,7 @@ export default function ProductDetails({
       {/* Product details */}
       <div className="space-y-6 lg:col-span-5">
         <div className="space-y-6 border-b border-border pb-4">
-          <ProductTitle title={product.title} />
+          <ProductTitle title={product.name} />
           <div className="flex items-center gap-1 text-lg lg:text-2xl  font-normal font-barlow">
             <ProductPrice
               price={product.price}

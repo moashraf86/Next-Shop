@@ -1,10 +1,13 @@
 export interface Product {
   id: number;
   documentId: string;
-  title: string;
+  name: string;
+  slug: string;
   description: Array<StrapiRichText>;
   images: StrapiImage[];
-  categories: Array<{ name: string }>;
+  categories: Array<{ slug: string; name: string }>;
+  collections: Array<{ slug: string; name: string }>;
+  faces: Array<{ slug: string; name: string; description: string }>;
   cart_items: Array<CartItem>;
   price: number;
   createdAt: string;

@@ -45,10 +45,10 @@ export default function CartItem({
           />
           <div className="space-y-2 sm:space-y-2 font-light grow">
             <Link
-              href={`/products/${item.product.documentId}`}
+              href={`/products/${item.product.slug}`}
               className="text-base font-barlow leading-tight hover:underline underline-offset-2"
             >
-              {item.product?.title}
+              {item.product?.name}
             </Link>
             <p>{item.variant}</p>
             <ProductPrice

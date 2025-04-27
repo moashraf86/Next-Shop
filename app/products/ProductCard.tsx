@@ -9,7 +9,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <Link
-      href={`/products/${product.documentId}`}
+      href={`/products/${product.slug}`}
       className="grid gap-4 overflow-hidden"
     >
       <div className="group aspect-[3/4] relative overflow-hidden bg-gray-100">
@@ -34,7 +34,7 @@ export default function ProductCard({ product }: { product: Product }) {
         )}
       </div>
       <div className="px-2 space-y-2">
-        <h2 className="text-sm text-center font-barlow">{product.title}</h2>
+        <h2 className="text-sm text-center font-barlow">{product.name}</h2>
         <p className="text-sm text-center">${product.price.toFixed(2)} USD</p>
       </div>
     </Link>

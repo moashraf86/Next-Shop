@@ -20,7 +20,7 @@ export default async function RelatedProducts({
   let relatedProducts;
 
   try {
-    relatedProducts = await fetchProductsByCategory(product.categories[0].name);
+    relatedProducts = await fetchProductsByCategory(product.categories[0].slug);
   } catch (error) {
     console.error("Failed to fetch related products:", error);
     return null;
@@ -39,7 +39,7 @@ export default async function RelatedProducts({
       <div className="space-y-10">
         <h2
           className="text-3xl md:text-4xl lg:text-5xl text-center font-light uppercase leading-tight tracking-tight"
-          aria-label={`More products like ${product.title}`}
+          aria-label={`More products like ${product.name}`}
         >
           Available styles
         </h2>
