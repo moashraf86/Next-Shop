@@ -5,9 +5,11 @@ export interface Product {
   slug: string;
   description: Array<StrapiRichText>;
   images: StrapiImage[];
+  bannerImage: StrapiImage[];
+  color: string;
   categories: Array<{ slug: string; name: string }>;
   collections: Array<{ slug: string; name: string }>;
-  faces: Array<{ slug: string; name: string; description: string }>;
+  faces: Array<{ slug: string; name: string; description: StrapiRichText[] }>;
   cart_items: Array<CartItem>;
   price: number;
   createdAt: string;

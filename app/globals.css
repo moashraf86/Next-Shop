@@ -33,6 +33,17 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    /* Banner color variables */
+    --black: 0 0% 18.04%;
+    --black-foreground: 0 0% 98%;
+    --white: 0 0% 96.08%;
+    --white-foreground: 0 0% 18.04%;
+    --midnight: 222 62% 14%;
+    --midnight-foreground: 0 0% 98%;
+    --green: 162 42% 24%;
+    --green-foreground: 0 0% 98%;
+    --blue: 202 26% 32%;
+    --blue-foreground: 0 0% 98%;
   }
   .dark {
     --background: 0 0 5.1%;

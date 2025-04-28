@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import ProductDetails from "@/components/product/ProductDetails";
 import RelatedProducts from "@/components/product/RelatedProducts";
+import ProductBanner from "@/components/product/ProductBanner";
 
 export default async function Product({
   params,
@@ -20,22 +21,21 @@ export default async function Product({
   const { product } = await fetchProductBySlug(slug);
 
   return (
-    <section>
-      <div className="container max-w-screen-xl">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator>/</BreadcrumbSeparator>
-            <BreadcrumbItem>
-              <BreadcrumbPage>{product.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-        <ProductDetails product={product} />
-        <RelatedProducts product={product} />
-      </div>
-    </section>
+    <main>
+      <Breadcrumb className="container max-w-screen-xl">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>/</BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbPage>{product.name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <ProductDetails product={product} />
+      <ProductBanner product={product} />
+      <RelatedProducts product={product} />
+    </main>
   );
 }

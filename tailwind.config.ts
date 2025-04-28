@@ -19,6 +19,26 @@ export default {
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        black: {
+          DEFAULT: "hsl(var(--black))",
+          foreground: "hsl(var(--black-foreground))",
+        },
+        white: {
+          DEFAULT: "hsl(var(--white))",
+          foreground: "hsl(var(--white-foreground))",
+        },
+        midnight: {
+          DEFAULT: "hsl(var(--midnight))",
+          foreground: "hsl(var(--midnight-foreground))",
+        },
+        green: {
+          DEFAULT: "hsl(var(--green))",
+          foreground: "hsl(var(--green-foreground))",
+        },
+        blue: {
+          DEFAULT: "hsl(var(--blue))",
+          foreground: "hsl(var(--blue-foreground))",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
