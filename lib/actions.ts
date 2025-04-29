@@ -44,7 +44,7 @@ export const addProductToCart = async (
   email: string | undefined,
   username: string,
   quantity: number,
-  variant: string | null,
+  size: string | null,
   product: Product
 ) => {
   try {
@@ -77,8 +77,7 @@ export const addProductToCart = async (
 
     // Check if the product already exists in the cart
     const existingCartItem = cartItems.find(
-      (item: CartItem) =>
-        item.product.id === product.id && item.variant === variant
+      (item: CartItem) => item.product.id === product.id && item.size === size
     );
 
     if (existingCartItem) {
@@ -121,7 +120,7 @@ export const addProductToCart = async (
           body: JSON.stringify({
             data: {
               quantity: quantity,
-              variant,
+              size,
               cart: cart.id,
               product: product.id,
             },
@@ -296,7 +295,7 @@ export const createOrder = async (data: {
       const quantity = cartItem.quantity;
       const price = product.price;
       const total = price * quantity;
-      const variant = cartItem.variant;
+      const size = cartItem.size;
 
       if (!product) continue; // Skip invalid products
 
@@ -312,7 +311,7 @@ export const createOrder = async (data: {
             quantity,
             price,
             total,
-            variant,
+            size,
             product: product.id,
             order: orderId,
           },

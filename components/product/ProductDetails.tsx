@@ -14,7 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import VariantSelector from "./VariantSelector";
+import SizeSelector from "./SizeSelector";
 
 export default function ProductDetails({
   product,
@@ -24,8 +24,8 @@ export default function ProductDetails({
   initialQuantity?: number;
 }) {
   const [quantity, setQuantity] = useState<number>(initialQuantity);
-  const [selectedVariant, setSelectedVariant] = useState<string>(
-    product.variantOptions[0].values[0]
+  const [selectedSize, setSelectedSize] = useState<string>(
+    product.sizes[0].name
   );
 
   return (
@@ -46,10 +46,10 @@ export default function ProductDetails({
             </div>
             <ProductRating rating={5} reviews={3} />
           </div>
-          <VariantSelector
-            variant={product.variantOptions[0]}
-            selectedVariant={selectedVariant}
-            setSelectedVariant={setSelectedVariant}
+          <SizeSelector
+            size={product.sizes}
+            selectedSize={selectedSize}
+            setSelectedSize={setSelectedSize}
           />
           <div className="space-y-1">
             <span>Quantity:</span>
@@ -62,7 +62,7 @@ export default function ProductDetails({
           <ProductActions
             product={product}
             quantity={quantity}
-            selectedVariant={selectedVariant}
+            selectedSize={selectedSize}
           />
           <Accordion type="single" collapsible>
             <AccordionItem value="description">

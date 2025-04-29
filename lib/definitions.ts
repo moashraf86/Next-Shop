@@ -15,13 +15,17 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
-  variantOptions: VariantOption[];
+  sizes: Size[];
 }
 
-export interface VariantOption {
+export interface Size {
+  createdAt: string;
+  documentId: string;
   id: number;
   name: string;
-  values: string[];
+  slug: string;
+  publishedAt: string;
+  updatedAt: string;
 }
 
 interface StrapiRichText {
@@ -87,7 +91,7 @@ export interface CartItem {
   documentId: string;
   quantity: number;
   product: Product;
-  variant: string;
+  size: string;
   createdAt: string;
 }
 

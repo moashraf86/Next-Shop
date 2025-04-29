@@ -8,11 +8,11 @@ import { Loader2 } from "lucide-react";
 export default function ProductActions({
   product,
   quantity,
-  selectedVariant,
+  selectedSize,
 }: {
   product: Product;
   quantity: number;
-  selectedVariant: string;
+  selectedSize: string;
 }) {
   const { user } = useUser();
   const { addProductToCart, isAdding } = useCart();
@@ -27,7 +27,7 @@ export default function ProductActions({
       return;
     }
     // add product to cart
-    addProductToCart(product, quantity, selectedVariant);
+    addProductToCart(product, quantity, selectedSize);
   };
 
   const handleBuyNow = () => {
