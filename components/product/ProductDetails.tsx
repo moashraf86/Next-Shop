@@ -5,7 +5,7 @@ import ProductPrice from "./ProductPrice";
 import QuantitySelector from "../shared/QuantitySelector";
 import ProductActions from "./ProductActions";
 import { Product } from "@/lib/definitions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductCarousel from "./ProductCarousel";
 import ProductRating from "./ProductRating";
 import {
@@ -15,6 +15,7 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import SizeSelector from "./SizeSelector";
+import StrapSelector from "./StrapSelector";
 
 export default function ProductDetails({
   product,
@@ -27,6 +28,16 @@ export default function ProductDetails({
   const [selectedSize, setSelectedSize] = useState<string>(
     product.sizes[0].name
   );
+  const availableStraps =
+    product.sizes.find((size) => size.name === selectedSize)?.straps || [];
+  const [selectedStrap, setSelectedStrap] = useState<string>(
+    availableStraps[0].name
+  );
+
+  useEffect(() => {
+    // clear selected strap when size changes
+    setSelectedStrap(availableStraps[0]?.name || "");
+  }, [selectedSize]);
 
   return (
     <section className="container max-w-screen-xl">
@@ -50,6 +61,12 @@ export default function ProductDetails({
             size={product.sizes}
             selectedSize={selectedSize}
             setSelectedSize={setSelectedSize}
+          />
+          <StrapSelector
+            selectedSize={selectedSize}
+            straps={availableStraps}
+            selectedStrap={selectedStrap}
+            setSelectedStrap={setSelectedStrap}
           />
           <div className="space-y-1">
             <span>Quantity:</span>

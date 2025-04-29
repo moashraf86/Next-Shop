@@ -16,18 +16,24 @@ export interface Product {
   updatedAt: string;
   publishedAt: string;
   sizes: Size[];
+  straps: Strap[];
 }
 
 export interface Size {
-  createdAt: string;
   documentId: string;
   id: number;
   name: string;
   slug: string;
-  publishedAt: string;
-  updatedAt: string;
+  straps: Strap[];
 }
 
+export interface Strap {
+  documentId: string;
+  id: number;
+  name: string;
+  slug: string;
+  images: StrapiImage[];
+}
 interface StrapiRichText {
   children: Array<{
     text: string;
@@ -163,7 +169,6 @@ interface PaymentCard {
   exp_year: number;
   fingerprint: string;
   funding: string;
-  generated_from: any | null;
   networks: {
     available: string[];
     preferred: string | null;
@@ -172,7 +177,6 @@ interface PaymentCard {
   three_d_secure_usage: {
     supported: boolean;
   };
-  wallet: any | null;
   last4: string;
 }
 
