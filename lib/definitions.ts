@@ -29,6 +29,7 @@ export interface Color {
   id: number;
   name: string;
   images: StrapiImage[];
+  pattern: StrapiImage;
 }
 export interface Strap {
   documentId: string;

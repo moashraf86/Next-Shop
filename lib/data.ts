@@ -148,6 +148,9 @@ export async function fetchProductBySlug(
               images: {
                 fields: ["url", "alternativeText"],
               },
+              pattern: {
+                fields: ["url", "alternativeText"],
+              },
             },
           },
         },
