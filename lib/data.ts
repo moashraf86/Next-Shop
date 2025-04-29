@@ -1,5 +1,6 @@
-import { Product, SingleStrapiResponse, StrapiResponse } from "./definitions";
+import qs from "qs";
 
+import { Product, SingleStrapiResponse, StrapiResponse } from "./definitions";
 // [1] fetch all products
 export async function fetchProducts(): Promise<{ products: Product[] }> {
   const res = await fetch(
@@ -117,8 +118,48 @@ export async function fetchBestSellingProducts(
 export async function fetchProductBySlug(
   slug: string
 ): Promise<{ product: Product }> {
+  // build deep query string to fetch product by slug with all related data
+  const query = qs.stringify({
+    filters: {
+      slug: {
+        $eq: slug,
+      },
+    },
+    // encodeValuesOnly: true,
+    populate: {
+      bannerImage: {
+        fields: ["url", "alternativeText"],
+      },
+      images: {
+        fields: ["url", "alternativeText"],
+      },
+      categories: {
+        fields: ["name", "slug"],
+      },
+      faces: {
+        fields: ["name", "slug", "description"],
+      },
+      sizes: {
+        fields: ["name", "slug"],
+        populate: {
+          straps: {
+            fields: ["name"],
+          },
+        },
+      },
+      straps: {
+        populate: {
+          images: {
+            fields: ["url", "alternativeText"],
+          },
+        },
+        fields: ["name", "slug"],
+      },
+    },
+  });
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products/?filters[slug][$eq]=${slug}&populate=*`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products/?${query}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
