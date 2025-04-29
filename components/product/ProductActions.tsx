@@ -9,10 +9,12 @@ export default function ProductActions({
   product,
   quantity,
   selectedSize,
+  color,
 }: {
   product: Product;
   quantity: number;
   selectedSize: string;
+  color?: string;
 }) {
   const { user } = useUser();
   const { addProductToCart, isAdding } = useCart();
@@ -27,7 +29,7 @@ export default function ProductActions({
       return;
     }
     // add product to cart
-    addProductToCart(product, quantity, selectedSize);
+    addProductToCart(product, quantity, selectedSize, color);
   };
 
   const handleBuyNow = () => {

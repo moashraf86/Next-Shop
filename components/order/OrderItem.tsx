@@ -19,9 +19,12 @@ export default function OrderItem({ item }: { item: OrderItemType }) {
               loading="lazy"
             />
             <div className="space-y-1 pt-2">
-              <h2 className="leading-tight font-light text-base">
+              <h2 className="text-base font-barlow leading-tight hover:underline underline-offset-2 font-normal">
                 {item.product.name}
               </h2>
+              <p className="text-sm font-light">
+                {item.size} / {item.color}
+              </p>
               <ProductPrice price={item.product.price} className="sm:hidden" />
               <p className="font-light">Qty: {item.quantity}</p>
               <Button

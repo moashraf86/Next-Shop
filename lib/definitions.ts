@@ -98,6 +98,7 @@ export interface CartItem {
   quantity: number;
   product: Product;
   size: string;
+  color: string | undefined;
   createdAt: string;
 }
 
@@ -109,8 +110,8 @@ export interface OrderItem {
   product: Product;
   quantity: number;
   total: number;
-  variant: string;
-  updatedAt: string;
+  size: string;
+  color: string | undefined;
 }
 export interface CartContextType {
   cartItems: CartItem[];

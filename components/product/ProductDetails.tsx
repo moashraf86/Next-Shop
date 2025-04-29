@@ -80,6 +80,7 @@ export default function ProductDetails({
             product={product}
             quantity={quantity}
             selectedSize={selectedSize}
+            color={selectedStrap}
           />
           <Accordion type="single" collapsible>
             <AccordionItem value="description">

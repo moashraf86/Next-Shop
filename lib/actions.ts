@@ -45,7 +45,8 @@ export const addProductToCart = async (
   username: string,
   quantity: number,
   size: string | null,
-  product: Product
+  product: Product,
+  color?: string | undefined
 ) => {
   try {
     // Fetch existing cart for the user
@@ -77,7 +78,10 @@ export const addProductToCart = async (
 
     // Check if the product already exists in the cart
     const existingCartItem = cartItems.find(
-      (item: CartItem) => item.product.id === product.id && item.size === size
+      (item: CartItem) =>
+        item.product.id === product.id &&
+        item.size === size &&
+        item.color === color
     );
 
     if (existingCartItem) {
@@ -123,6 +127,7 @@ export const addProductToCart = async (
               size,
               cart: cart.id,
               product: product.id,
+              color: color,
             },
           }),
         }
@@ -296,6 +301,7 @@ export const createOrder = async (data: {
       const price = product.price;
       const total = price * quantity;
       const size = cartItem.size;
+      const color = cartItem.color;
 
       if (!product) continue; // Skip invalid products
 
@@ -312,6 +318,7 @@ export const createOrder = async (data: {
             price,
             total,
             size,
+            color,
             product: product.id,
             order: orderId,
           },

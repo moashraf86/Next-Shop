@@ -64,14 +64,16 @@ export default async function PaymentConfirm({
                 className="aspect-square object-cover rounded"
                 loading="lazy"
               />
-              <div className="space-y-2">
+              <div className="space-y-2 font-light">
                 <Link
-                  href={`/products/${item.product.documentId}`}
-                  className="hover:underline"
+                  href={`/products/${item.product.slug}`}
+                  className="text-base font-barlow leading-tight hover:underline underline-offset-2 font-normal"
                 >
-                  {item.product.title}
+                  {item.product.name}
                 </Link>
-                <p>{item.variant}</p>
+                <p>
+                  {item.size} / {item.color}
+                </p>
                 <p>Qty: {item.quantity}</p>
               </div>
               <span className="inline-flex ml-auto">
@@ -85,7 +87,7 @@ export default async function PaymentConfirm({
           <span className="text-lg font-medium">${totalPrice}</span>
         </div>
         {/* Shipping */}
-        <div className="flex items-start justify-between w-full">
+        <div className="flex items-start justify-between w-full border-t border-border py-6">
           <span className="font-medium">Shipping Address</span>
           <div className="space-y-1 text-end">
             <p>{order.shipping_address.line1}</p>

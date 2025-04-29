@@ -50,7 +50,9 @@ export default function CartItem({
             >
               {item.product?.name}
             </Link>
-            <p>{item.size}</p>
+            <p>
+              {item.size} / {item.color}
+            </p>
             <ProductPrice
               price={item.product?.price}
               className="hidden sm:block"

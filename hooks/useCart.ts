@@ -34,12 +34,20 @@ export const useCart = () => {
   const addProductToCart = async (
     product: Product,
     quantity: number,
-    size: string
+    size: string,
+    color?: string | undefined
   ) => {
     try {
       if (!email || !username) throw new Error("User email is missing");
       setIsAddingProduct(true);
-      await apiAddProductToCart(email, username, quantity, size, product);
+      await apiAddProductToCart(
+        email,
+        username,
+        quantity,
+        size,
+        product,
+        color
+      );
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast({
         title: "Product added to cart",
