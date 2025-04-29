@@ -1,37 +1,37 @@
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { Strap } from "@/lib/definitions";
+import { Color } from "@/lib/definitions";
 
-export default function StrapSelector({
-  straps,
-  selectedStrap,
-  setSelectedStrap,
+export default function ColorSelector({
+  colors,
+  selectedColor,
+  setSelectedColor,
 }: {
-  straps: Strap[];
+  colors: Color[];
   selectedSize: string | null;
-  selectedStrap: string | null;
-  setSelectedStrap: (value: string) => void;
+  selectedColor: string | null;
+  setSelectedColor: (value: string) => void;
 }) {
   // Handle size change
-  const handleStrapChange = (value: string) => {
-    setSelectedStrap(value);
+  const handleColorChange = (value: string) => {
+    setSelectedColor(value);
   };
 
   return (
     <div className="space-y-2">
       <span>Strap color:</span>
       <div className="flex items-center gap-2">
-        {straps.map((strap) => (
+        {colors.map((strap) => (
           <Button
             key={strap.id}
             variant="outline"
             className={cn(
               "text-sm font-barlow font-normal lowercase h-12 shadow-none",
               {
-                "border-2 border-primary": selectedStrap === strap.name,
+                "border-2 border-primary": selectedColor === strap.name,
               }
             )}
-            onClick={() => handleStrapChange(strap.name)}
+            onClick={() => handleColorChange(strap.name)}
           >
             {strap.name}
           </Button>

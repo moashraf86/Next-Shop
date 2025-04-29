@@ -140,20 +140,17 @@ export async function fetchProductBySlug(
         fields: ["name", "slug", "description"],
       },
       sizes: {
-        fields: ["name", "slug"],
+        fields: ["value"],
         populate: {
-          straps: {
+          colors: {
             fields: ["name"],
+            populate: {
+              images: {
+                fields: ["url", "alternativeText"],
+              },
+            },
           },
         },
-      },
-      straps: {
-        populate: {
-          images: {
-            fields: ["url", "alternativeText"],
-          },
-        },
-        fields: ["name", "slug"],
       },
     },
   });

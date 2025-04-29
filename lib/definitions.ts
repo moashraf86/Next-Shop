@@ -20,13 +20,16 @@ export interface Product {
 }
 
 export interface Size {
-  documentId: string;
   id: number;
-  name: string;
-  slug: string;
-  straps: Strap[];
+  value: string;
+  colors: Color[];
 }
 
+export interface Color {
+  id: number;
+  name: string;
+  images: StrapiImage[];
+}
 export interface Strap {
   documentId: string;
   id: number;

@@ -15,7 +15,7 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import SizeSelector from "./SizeSelector";
-import StrapSelector from "./StrapSelector";
+import ColorSelector from "./ColorSelector";
 
 export default function ProductDetails({
   product,
@@ -26,17 +26,18 @@ export default function ProductDetails({
 }) {
   const [quantity, setQuantity] = useState<number>(initialQuantity);
   const [selectedSize, setSelectedSize] = useState<string>(
-    product.sizes[0].name
+    product.sizes[0].value
   );
-  const availableStraps =
-    product.sizes.find((size) => size.name === selectedSize)?.straps || [];
-  const [selectedStrap, setSelectedStrap] = useState<string>(
-    availableStraps[0].name
+  const availableColors = product.sizes.map((size) => size.colors).flat() || [];
+
+  const [selectedColor, setSelectedColor] = useState<string>(
+    availableColors[0]?.name || ""
   );
 
   useEffect(() => {
     // clear selected strap when size changes
-    setSelectedStrap(availableStraps[0]?.name || "");
+    setSelectedColor(availableColors[0]?.name || "");
+    console.log(product);
   }, [selectedSize]);
 
   return (
@@ -58,15 +59,15 @@ export default function ProductDetails({
             <ProductRating rating={5} reviews={3} />
           </div>
           <SizeSelector
-            size={product.sizes}
+            sizes={product.sizes}
             selectedSize={selectedSize}
             setSelectedSize={setSelectedSize}
           />
-          <StrapSelector
+          <ColorSelector
             selectedSize={selectedSize}
-            straps={availableStraps}
-            selectedStrap={selectedStrap}
-            setSelectedStrap={setSelectedStrap}
+            colors={availableColors}
+            selectedColor={selectedColor}
+            setSelectedColor={setSelectedColor}
           />
           <div className="space-y-1">
             <span>Quantity:</span>
@@ -80,7 +81,7 @@ export default function ProductDetails({
             product={product}
             quantity={quantity}
             selectedSize={selectedSize}
-            color={selectedStrap}
+            color={selectedColor}
           />
           <Accordion type="single" collapsible>
             <AccordionItem value="description">

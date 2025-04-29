@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils";
 import { Size } from "@/lib/definitions";
 
 export default function SizeSelector({
-  size,
+  sizes,
   selectedSize,
   setSelectedSize,
 }: {
-  size: Size[];
+  sizes: Size[];
   selectedSize: string | null;
   setSelectedSize: (value: string) => void;
 }) {
@@ -20,19 +20,19 @@ export default function SizeSelector({
     <div className="space-y-2">
       <span>Watch size:</span>
       <div className="flex items-center gap-2">
-        {size.map((v) => (
+        {sizes.map((size) => (
           <Button
-            key={v.id}
+            key={size.id}
             variant="outline"
             className={cn(
               "text-sm font-barlow font-normal lowercase h-12 shadow-none",
               {
-                "border-2 border-primary": selectedSize === v.name,
+                "border-2 border-primary": selectedSize === size.value,
               }
             )}
-            onClick={() => handleSizeChange(v.name)}
+            onClick={() => handleSizeChange(size.value)}
           >
-            {v.name}
+            {size.value}
           </Button>
         ))}
       </div>
