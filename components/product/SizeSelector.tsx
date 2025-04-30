@@ -1,19 +1,22 @@
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { Size } from "@/lib/definitions";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SizeSelector({
   sizes,
-  selectedSize,
-  setSelectedSize,
+  defaultColor,
 }: {
   sizes: Size[];
-  selectedSize: string | null;
-  setSelectedSize: (value: string) => void;
+  defaultColor: string;
 }) {
+  const searchParams = useSearchParams();
+  const url = useRouter();
+  const selectedSize = searchParams.get("size") || sizes[0].value;
+
   // Handle size change
   const handleSizeChange = (value: string) => {
-    setSelectedSize(value);
+    url.push(`?size=${value}&color=${defaultColor}`);
   };
 
   return (

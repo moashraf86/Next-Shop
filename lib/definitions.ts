@@ -6,7 +6,7 @@ export interface Product {
   description: Array<StrapiRichText>;
   images: StrapiImage[];
   bannerImage: StrapiImage[];
-  color: string;
+  bannerBgColor: string;
   categories: Array<{ slug: string; name: string }>;
   collections: Array<{ slug: string; name: string }>;
   faces: Array<{ slug: string; name: string; description: StrapiRichText[] }>;

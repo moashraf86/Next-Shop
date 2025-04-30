@@ -7,9 +7,12 @@ export default function ProductCard({ product }: { product: Product }) {
     (cat) => cat.name === "bestselling"
   );
 
+  const size = product.sizes?.[0]?.value ?? null;
+  const color = product.sizes?.[0]?.colors?.[0]?.name ?? null;
+
   return (
     <Link
-      href={`/products/${product.slug}`}
+      href={`/products/${product.slug}?size=${size}&color=${color}`}
       className="grid gap-4 overflow-hidden"
     >
       <div className="group aspect-[3/4] relative overflow-hidden bg-gray-100">

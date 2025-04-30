@@ -4,7 +4,7 @@ import ProductDescription from "./ProductDescription";
 import ProductPrice from "./ProductPrice";
 import QuantitySelector from "../shared/QuantitySelector";
 import ProductActions from "./ProductActions";
-import { Product } from "@/lib/definitions";
+import { Product, StrapiImage } from "@/lib/definitions";
 import { useEffect, useState } from "react";
 import ProductCarousel from "./ProductCarousel";
 import ProductRating from "./ProductRating";
@@ -16,6 +16,7 @@ import {
 } from "../ui/accordion";
 import SizeSelector from "./SizeSelector";
 import ColorSelector from "./ColorSelector";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ProductDetails({
   product,
@@ -24,26 +25,41 @@ export default function ProductDetails({
   product: Product;
   initialQuantity?: number;
 }) {
-  const [quantity, setQuantity] = useState<number>(initialQuantity);
-  const [selectedSize, setSelectedSize] = useState<string>(
-    product.sizes[0]?.value || ""
-  );
-  const availableColors = product.sizes.map((size) => size.colors).flat() || [];
-
-  const [selectedColor, setSelectedColor] = useState<string>(
-    availableColors[0]?.name || ""
-  );
-
-  // get product carousel images from based on selected size and color
-  const carouselImages =
+  const searchParams = useSearchParams();
+  const url = useRouter();
+  const defaultSize = product.sizes[0].value;
+  const selectedSize = searchParams.get("size") || defaultSize;
+  const defaultColor = product.sizes[0].colors[0].name;
+  const selectedColor = searchParams.get("color") || defaultColor;
+  // get product selected color image
+  const selectedCarouselImages =
     product.sizes
       .find((size) => size.value === selectedSize)
       ?.colors.find((color) => color.name === selectedColor)?.images || [];
 
+  const [quantity, setQuantity] = useState<number>(initialQuantity);
+  const [carouselImages, setCarouselImages] = useState<StrapiImage[]>(
+    selectedCarouselImages || []
+  );
+  const availableColors =
+    product.sizes.find((size) => size.value === selectedSize)?.colors || [];
+
   useEffect(() => {
-    // clear selected strap when size changes
-    setSelectedColor(availableColors[0]?.name || "");
-  }, [selectedSize]);
+    // change carousel images based on selected size and color
+    const updatedCarouselImages =
+      product.sizes
+        .find((size) => size.value === selectedSize)
+        ?.colors.find((color) => color.name === selectedColor)?.images || [];
+
+    console.log("carouselImages", updatedCarouselImages);
+    setCarouselImages(updatedCarouselImages);
+  }, [searchParams, selectedColor]);
+
+  // renders only once on initial load
+  useEffect(() => {
+    // set default color to the first available color url does not include these params
+    url.push(`?size=${selectedSize}&color=${selectedColor}`);
+  }, []);
 
   return (
     <section className="container max-w-screen-xl">
@@ -65,14 +81,15 @@ export default function ProductDetails({
           </div>
           <SizeSelector
             sizes={product.sizes}
-            selectedSize={selectedSize}
-            setSelectedSize={setSelectedSize}
+            // selectedSize={selectedSize}
+            defaultColor={defaultColor}
+            // setSelectedSize={setSelectedSize}
           />
           <ColorSelector
-            selectedSize={selectedSize}
+            // selectedSize={selectedSize}
             colors={availableColors}
-            selectedColor={selectedColor}
-            setSelectedColor={setSelectedColor}
+            // selectedColor={selectedColor}
+            // setSelectedColor={setSelectedColor}
           />
           <div className="space-y-1">
             <span>Quantity:</span>
@@ -85,8 +102,8 @@ export default function ProductDetails({
           <ProductActions
             product={product}
             quantity={quantity}
-            selectedSize={selectedSize}
-            color={selectedColor}
+            selectedSize={searchParams.get("size") || defaultSize}
+            color={searchParams.get("color") || defaultColor}
           />
           <Accordion type="single" collapsible>
             <AccordionItem value="description">

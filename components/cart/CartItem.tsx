@@ -42,7 +42,7 @@ export default function CartItem({
       <td className="px-6 py-4 text-sm font-medium text-gray-800">
         <div className="flex items-center gap-4">
           <Image
-            src={selectedColorImage?.url || ""}
+            src={selectedColorImage?.formats?.small?.url || ""}
             alt={selectedColorImage?.alternativeText || "product image"}
             width={100}
             height={100}
@@ -50,7 +50,7 @@ export default function CartItem({
           />
           <div className="space-y-2 sm:space-y-2 font-light grow">
             <Link
-              href={`/products/${item.product.slug}`}
+              href={`/products/${item.product.slug}?size=${item.size}&color=${item.color}`}
               className="text-base font-barlow leading-tight hover:underline underline-offset-2"
             >
               {item.product?.name}

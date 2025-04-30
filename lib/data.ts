@@ -61,8 +61,31 @@ export async function fetchRelatedProducts(
 export async function fetchProductsByCategory(
   slug: string
 ): Promise<{ products: Product[] }> {
+  const query = qs.stringify({
+    filters: {
+      categories: {
+        slug: {
+          $eq: slug,
+        },
+      },
+    },
+    // populate: "*",
+    populate: {
+      images: {
+        fields: ["url", "alternativeText"],
+      },
+      sizes: {
+        fields: ["value"],
+        populate: {
+          colors: {
+            fields: ["name"],
+          },
+        },
+      },
+    },
+  });
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?populate=*&filters[categories][slug][$eq]=${slug}`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?${query}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
@@ -76,6 +99,8 @@ export async function fetchProductsByCategory(
   }
 
   const response: StrapiResponse<Product> = await res.json();
+
+  console.log("fetchProductsByCategory", response);
 
   const products = response.data;
 
@@ -146,7 +171,7 @@ export async function fetchProductBySlug(
             fields: ["name"],
             populate: {
               images: {
-                fields: ["url", "alternativeText"],
+                fields: ["name", "alternativeText", "url", "formats"],
               },
               pattern: {
                 fields: ["url", "alternativeText"],
@@ -200,7 +225,7 @@ export async function fetchCartItems(email: string | undefined) {
                     fields: ["name"],
                     populate: {
                       images: {
-                        fields: ["url", "alternativeText"],
+                        fields: ["url", "alternativeText", "formats"],
                       },
                       pattern: {
                         fields: ["url", "alternativeText"],

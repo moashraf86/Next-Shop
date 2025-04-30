@@ -5,6 +5,8 @@ import {
   CarouselApi,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "../ui/carousel";
 import { useEffect, useRef, useState } from "react";
 import CarouselIndicators from "./CarouselIndicators";
@@ -65,6 +67,7 @@ export default function ProductCarousel({
         images={images}
         handleScrollToImage={handleScrollToImage}
         indicatorsMaxHeight={indicatorsMaxHeight}
+        className="hidden sm:block"
       />
       <CarouselContent>
         {Array.from({ length: images.length }).map((_, index) => (
@@ -85,6 +88,13 @@ export default function ProductCarousel({
           </CarouselItem>
         ))}
       </CarouselContent>
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 inline-flex items-center justify-end gap-2 lg:hidden h-8 px-4">
+        <CarouselPrevious className="static translate-0 bg-transparent border-0 shadow-none" />
+        <span>
+          {current + 1} / {images.length}
+        </span>
+        <CarouselNext className="static translate-0 bg-transparent border-0 shadow-none" />
+      </div>
     </Carousel>
   );
 }

@@ -2,20 +2,17 @@ import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { Color } from "@/lib/definitions";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ColorSelector({
-  colors,
-  selectedColor,
-  setSelectedColor,
-}: {
-  colors: Color[];
-  selectedSize: string | null;
-  selectedColor: string | null;
-  setSelectedColor: (value: string) => void;
-}) {
+export default function ColorSelector({ colors }: { colors: Color[] }) {
+  const searchParams = useSearchParams();
+  const url = useRouter();
+  const selectedColor = searchParams.get("color") || colors[0].name;
+
   // Handle size change
   const handleColorChange = (value: string) => {
-    setSelectedColor(value);
+    // setSelectedColor(value);
+    url.push(`?size=${searchParams.get("size")}&color=${value}`);
   };
 
   return (

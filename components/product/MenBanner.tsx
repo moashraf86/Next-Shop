@@ -19,7 +19,7 @@ export default function MenBanner({ product }: { product: Product }) {
   const description = product.faces[0]?.description[0]?.children[0]?.text;
   const webBanner = product.bannerImage[0].url;
   const mobileBanner = product.bannerImage[1]?.url;
-  const color = product.color;
+  const color = product.bannerBgColor;
 
   return (
     <section className="relative flex items-center py-10 mb-20 bg-cover bg-center bg-no-repeat lg:min-h-[700px]">
