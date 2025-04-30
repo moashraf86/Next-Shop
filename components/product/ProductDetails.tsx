@@ -26,7 +26,7 @@ export default function ProductDetails({
 }) {
   const [quantity, setQuantity] = useState<number>(initialQuantity);
   const [selectedSize, setSelectedSize] = useState<string>(
-    product.sizes[0].value
+    product.sizes[0]?.value || ""
   );
   const availableColors = product.sizes.map((size) => size.colors).flat() || [];
 
@@ -34,17 +34,22 @@ export default function ProductDetails({
     availableColors[0]?.name || ""
   );
 
+  // get product carousel images from based on selected size and color
+  const carouselImages =
+    product.sizes
+      .find((size) => size.value === selectedSize)
+      ?.colors.find((color) => color.name === selectedColor)?.images || [];
+
   useEffect(() => {
     // clear selected strap when size changes
     setSelectedColor(availableColors[0]?.name || "");
-    console.log(product);
   }, [selectedSize]);
 
   return (
     <section className="container max-w-screen-xl">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 mb-20">
         {/* Product Carousel */}
-        <ProductCarousel images={product.images} className="lg:col-span-7" />
+        <ProductCarousel images={carouselImages} className="lg:col-span-7" />
         {/* Product details */}
         <div className="space-y-6 lg:col-span-5">
           <div className="space-y-6 border-b border-border pb-4">

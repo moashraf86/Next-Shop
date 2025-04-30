@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import QuantitySelector from "../shared/QuantitySelector";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useCart } from "@/hooks/useCart";
 import Link from "next/link";
 
@@ -32,13 +32,18 @@ export default function CartItem({
     setQuantity(newQuantity);
   };
 
+  // get product selected color image
+  const selectedColorImage = item.product?.sizes
+    .find((size) => size.value === item.size)
+    ?.colors.find((color) => color.name === item.color)?.images[0];
+
   return (
     <tr className={cn("font-light", className)} style={style}>
       <td className="px-6 py-4 text-sm font-medium text-gray-800">
         <div className="flex items-center gap-4">
           <Image
-            src={item.product?.images[0].formats.small.url}
-            alt={item.product?.images[0].alternativeText}
+            src={selectedColorImage?.url || ""}
+            alt={selectedColorImage?.alternativeText || "product image"}
             width={100}
             height={100}
             className="object-cover object-center sm:aspect-square"

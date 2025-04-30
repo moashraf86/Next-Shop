@@ -181,8 +181,43 @@ export async function fetchProductBySlug(
 
 // [5] fetch cart products from strapi
 export async function fetchCartItems(email: string | undefined) {
+  const query = qs.stringify({
+    filter: {
+      email: {
+        $eq: email,
+      },
+    },
+    populate: {
+      cart_items: {
+        populate: {
+          product: {
+            fields: ["name", "slug", "price"],
+            populate: {
+              sizes: {
+                fields: ["value"],
+                populate: {
+                  colors: {
+                    fields: ["name"],
+                    populate: {
+                      images: {
+                        fields: ["url", "alternativeText"],
+                      },
+                      pattern: {
+                        fields: ["url", "alternativeText"],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/carts?filters[email][$eq]=${email}&populate[cart_items][populate][product][populate]=images`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/carts?${query}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
