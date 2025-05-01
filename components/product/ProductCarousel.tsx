@@ -15,9 +15,11 @@ import { useWindowSize } from "@uidotdev/usehooks";
 export default function ProductCarousel({
   images,
   className,
+  resetCarousel,
 }: {
   images: StrapiImage[];
   className?: string;
+  resetCarousel?: boolean;
 }) {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState<number>(0);
@@ -54,6 +56,12 @@ export default function ProductCarousel({
     }
   }, [size]);
 
+  useEffect(() => {
+    // reset the carousel to the first image when the selected color/size changes
+    setCurrent(0);
+    api?.scrollTo(0);
+  }, [resetCarousel]);
+
   return (
     <Carousel
       className={cn(
@@ -67,7 +75,7 @@ export default function ProductCarousel({
         images={images}
         handleScrollToImage={handleScrollToImage}
         indicatorsMaxHeight={indicatorsMaxHeight}
-        className="hidden sm:block"
+        className="hidden md:block"
       />
       <CarouselContent>
         {Array.from({ length: images.length }).map((_, index) => (
@@ -88,7 +96,7 @@ export default function ProductCarousel({
           </CarouselItem>
         ))}
       </CarouselContent>
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 inline-flex items-center justify-end gap-2 lg:hidden h-8 px-4">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 inline-flex items-center justify-end gap-2 md:hidden h-8 px-4">
         <CarouselPrevious className="static translate-0 bg-transparent border-0 shadow-none" />
         <span>
           {current + 1} / {images.length}
