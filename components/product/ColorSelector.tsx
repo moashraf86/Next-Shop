@@ -12,7 +12,9 @@ export default function ColorSelector({ colors }: { colors: Color[] }) {
   // Handle size change
   const handleColorChange = (value: string) => {
     // setSelectedColor(value);
-    url.push(`?size=${searchParams.get("size")}&color=${value}`);
+    url.push(`?size=${searchParams.get("size")}&color=${value}`, {
+      scroll: false,
+    });
   };
 
   return (

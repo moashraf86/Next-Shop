@@ -16,7 +16,7 @@ export default function SizeSelector({
 
   // Handle size change
   const handleSizeChange = (value: string) => {
-    url.push(`?size=${value}&color=${defaultColor}`);
+    url.push(`?size=${value}&color=${defaultColor}`, { scroll: false });
   };
 
   return (
