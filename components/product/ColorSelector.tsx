@@ -20,13 +20,13 @@ export default function ColorSelector({ colors }: { colors: Color[] }) {
   return (
     <div className="space-y-2">
       <span>Strap: {selectedColor}</span>
-      <div className="flex items-center gap-3">
+      <div className="grid grid-cols-[repeat(auto-fit,40px)] gap-3">
         {colors.map((color) => (
           <Button
             key={color.id}
             variant="outline"
             className={cn(
-              "relative text-sm font-barlow font-normal lowercase w-8 h-8 shadow-none border-0 p-[1px] after:absolute after:content-[''] after:inset-[-3px] after:bg-transparent after:border-2 after:border-primary after:z-[-1] after:transition-transform after:duration-200 after:ease",
+              "relative text-sm font-barlow font-normal lowercase w-9 h-9 shadow-none border-0 p-[1px] after:absolute after:content-[''] after:inset-[-3px] after:bg-transparent after:border-2 after:border-primary after:z-[-1] after:transition-transform after:duration-200 after:ease",
               {
                 "after:scale-100 after:opacity-100":
                   selectedColor === color.name,

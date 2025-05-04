@@ -19,19 +19,25 @@ export default function QuantitySelector({
   isUpdating = false,
   className,
 }: QuantitySelectorProps) {
-  const [inputValue, setInputValue] = useState(quantity.toString());
+  const [inputValue, setInputValue] = useState(quantity);
 
   // Handle the change event for the input field
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    const value = parseInt(e.target.value);
+    // If the value is not a number or less than or equal to 0, set it to 1
+    if (isNaN(value) || value <= 0) {
+      setInputValue(1);
+      setQuantity(1);
+      return;
+    }
     setInputValue(value);
-    setQuantity(parseInt(value));
+    setQuantity(value);
   };
 
   // Handle the key down event for the input field
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      const value = parseInt(inputValue);
+      const value = parseInt(inputValue.toString());
       if (!isNaN(value) && value > 0) {
         setQuantity(value);
         if (mode === "cart" && onUpdateCart) {

@@ -47,11 +47,9 @@ export default async function RelatedProducts({
       </h2>
       {/* Visible on screens < 1024px */}
       <div className="grid auto-cols-[52vw] md:auto-cols-[35vw] grid-cols-none grid-flow-col gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide lg:hidden">
-        {Array.from({ length: filteredProducts.length }).map((_, index) => (
-          <div key={index} className="snap-center snap-always">
-            <ProductCard
-              product={filteredProducts[index % filteredProducts.length]}
-            />
+        {filteredProducts.map((product) => (
+          <div key={product.id} className="snap-center snap-always">
+            <ProductCard product={product} />
           </div>
         ))}
       </div>

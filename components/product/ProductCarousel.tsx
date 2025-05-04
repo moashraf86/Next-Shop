@@ -78,30 +78,29 @@ export default function ProductCarousel({
         className="hidden md:block"
       />
       <CarouselContent>
-        {Array.from({ length: images.length }).map((_, index) => (
+        {images.map((image, index) => (
           <CarouselItem key={index}>
             <Image
               ref={imageHeight}
-              src={images[index % images.length].url}
-              alt={
-                images[index % images.length].alternativeText || "Product Image"
-              }
+              src={image.url}
+              alt={image.alternativeText || "Product image"}
               height={500}
               width={500}
               className="object-cover object-center aspect-auto w-full cursor-grab"
               quality={100}
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 100vw"
-              loading="eager"
+              loading={index === 0 ? "eager" : "lazy"}
+              draggable={false}
             />
           </CarouselItem>
         ))}
       </CarouselContent>
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 inline-flex items-center justify-end gap-2 md:hidden h-8 px-4">
-        <CarouselPrevious className="static translate-0 bg-transparent border-0 shadow-none" />
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center justify-end gap-2 md:hidden h-8 bg-primary/40 rounded-full backdrop-blur-lg text-primary-foreground">
+        <CarouselPrevious className="static translate-0 bg-transparent border-0 shadow-none hover:bg-transparent hover:text-primary-foreground" />
         <span>
           {current + 1} / {images.length}
         </span>
-        <CarouselNext className="static translate-0 bg-transparent border-0 shadow-none" />
+        <CarouselNext className="static translate-0 bg-transparent border-0 shadow-none hover:bg-transparent hover:text-primary-foreground" />
       </div>
     </Carousel>
   );
