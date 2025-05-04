@@ -18,13 +18,13 @@ const categories = [
     name: "Straps & Bands",
     slug: "straps",
     image: "/categories/straps.webp",
-    href: "/categories/straps",
+    href: "/categories/straps-bands",
   },
   {
     name: "Gift & Pouches",
     slug: "gifts",
     image: "/categories/gifts.jpg",
-    href: "/products/gifts",
+    href: "/categories/gifts-pouches",
   },
 ];
 

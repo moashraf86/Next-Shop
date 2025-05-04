@@ -1,27 +1,12 @@
-import { fetchCategories, fetchProductsByCategory } from "@/lib/data";
-import ProductList from "../../products/ProductList";
-import Link from "next/link";
-import Image from "next/image";
+import { fetchAllProducts, fetchCategories } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
+import ProductList from "../products/ProductList";
 
-export default async function CategoryPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const { slug } = await params;
-
+export default async function Categories() {
   const { categories } = await fetchCategories();
-
-  // get current category
-  const category = categories.find((category) => category.slug === slug);
-  const catBanner = category?.banner || {
-    url: "/categories/all.webp",
-    alternativeText: "Category Banner",
-  };
-
-  // Fetch products by category
-  const { products } = await fetchProductsByCategory(slug);
+  const { products } = await fetchAllProducts();
 
   return (
     <main>
@@ -29,15 +14,15 @@ export default async function CategoryPage({
       <section className="relative w-full h-[400px]">
         <div className="flex items-center justify-center absolute top-0 left-0 right-0 h-[400px] after:absolute after:-inset-0 after:bg-black/20 after:content-[''] after:z-0">
           <Image
-            src={catBanner.url}
-            alt={catBanner.alternativeText}
+            src="/categories/all.webp"
+            alt="Categories"
             className="w-full absolute top-0 left-0 h-full object-cover object-center z-0"
             loading="lazy"
             width={1440}
             height={600}
           />
           <h1 className="text-4xl md:text-5xl lg:text-6xl text-white text-center font-light uppercase leading-tight tracking-tight relative z-[1]">
-            {`${category?.name}'s Watches`}
+            All Products
           </h1>
         </div>
       </section>
@@ -56,7 +41,7 @@ export default async function CategoryPage({
                     className={cn(
                       "relative inline-block after:absolute after:w-full after:left-0 after:h-px after:bottom-0 after:content-[''] after:bg-black after:transition-transform after:duration-200 after:ease-in-out after:scale-x-0 hover:after:scale-x-100 after:origin-right hover:after:origin-left",
                       {
-                        "after:scale-x-100 after:origin-left": slug === "all",
+                        "after:scale-x-100 after:origin-left": true,
                       }
                     )}
                   >
@@ -67,13 +52,7 @@ export default async function CategoryPage({
                   <li key={category.documentId} className="py-5">
                     <Link
                       href={`/categories/${category.slug}`}
-                      className={cn(
-                        "relative inline-block after:absolute after:w-full after:left-0 after:h-px after:bottom-0 after:content-[''] after:bg-black after:transition-transform after:duration-200 after:ease-in-out after:scale-x-0 hover:after:scale-x-100 after:origin-right hover:after:origin-left",
-                        {
-                          "after:scale-x-100 after:origin-left":
-                            slug === category.slug,
-                        }
-                      )}
+                      className="relative inline-block after:absolute after:w-full after:left-0 after:h-px after:bottom-0 after:content-[''] after:bg-black after:transition-transform after:duration-200 after:ease-in-out after:scale-x-0 hover:after:scale-x-100 after:origin-right hover:after:origin-left"
                     >
                       {category.name}
                     </Link>

@@ -28,7 +28,7 @@ export default function Header() {
         <nav aria-label="Global" className="flex-1">
           <ul className="hidden lg:flex items-center gap-6 text-sm">
             <li>
-              <Link className="text-inherit text-[15px]" href="#">
+              <Link className="text-inherit text-[15px]" href="/categories">
                 Shop
               </Link>
             </li>

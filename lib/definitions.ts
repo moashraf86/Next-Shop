@@ -130,6 +130,17 @@ export interface CartContextType {
   currentUpdatingProduct: string | null;
 }
 
+export interface Category {
+  banner: StrapiImage;
+  id: number;
+  documentId: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
 export interface Address {
   /**
    * City/District/Suburb/Town/Village.

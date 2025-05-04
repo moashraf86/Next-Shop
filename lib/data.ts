@@ -1,10 +1,36 @@
 import qs from "qs";
 
-import { Product, SingleStrapiResponse, StrapiResponse } from "./definitions";
+import {
+  Category,
+  Product,
+  SingleStrapiResponse,
+  StrapiResponse,
+} from "./definitions";
 // [1] fetch all products
-export async function fetchProducts(): Promise<{ products: Product[] }> {
+export async function fetchAllProducts(): Promise<{ products: Product[] }> {
+  // build deep query string to fetch product by slug with all related data
+  const query = qs.stringify({
+    populate: {
+      images: {
+        fields: ["url", "alternativeText"],
+      },
+      sizes: {
+        fields: ["value"],
+        populate: {
+          colors: {
+            fields: ["name"],
+            populate: {
+              images: {
+                fields: ["url", "alternativeText"],
+              },
+            },
+          },
+        },
+      },
+    },
+  });
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?populate=*`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?${query}&sort=createdAt:desc`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
@@ -16,9 +42,6 @@ export async function fetchProducts(): Promise<{ products: Product[] }> {
   if (!res.ok) {
     throw new Error("Failed to fetch products");
   }
-
-  // simulate long loading for 2 seconds
-  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   const response: StrapiResponse<Product> = await res.json();
 
@@ -98,6 +121,14 @@ export async function fetchProductsByCategory(
       },
     },
     populate: {
+      categories: {
+        fields: ["name", "slug"],
+        populate: {
+          banner: {
+            fields: ["url", "alternativeText"],
+          },
+        },
+      },
       images: {
         fields: ["url", "alternativeText"],
       },
@@ -112,7 +143,7 @@ export async function fetchProductsByCategory(
     },
   });
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?${query}`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?${query}&sort=createdAt:desc`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
@@ -374,3 +405,37 @@ export const fetchOrders = async (email: string | undefined) => {
     throw error;
   }
 };
+
+// [8] fetch all categories
+export async function fetchCategories(): Promise<{ categories: Category[] }> {
+  // build deep query string to fetch product by slug with all related data
+  const query = qs.stringify({
+    populate: {
+      fields: ["name", "slug"],
+      banner: {
+        fields: ["url", "alternativeText"],
+      },
+    },
+  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/categories?${query}&sort=createdAt:asc`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+      },
+      next: { revalidate: 60 },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch categories");
+  }
+
+  const response: StrapiResponse<Category> = await res.json();
+
+  const categories = response.data;
+
+  return {
+    categories,
+  };
+}
