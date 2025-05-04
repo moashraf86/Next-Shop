@@ -34,8 +34,36 @@ export async function fetchRelatedProducts(
   cat: string,
   face: string
 ): Promise<{ products: Product[] }> {
+  // build deep query string to fetch product by slug with all related data
+  const query = qs.stringify({
+    filters: {
+      categories: {
+        slug: {
+          $eq: cat,
+        },
+      },
+      faces: {
+        slug: {
+          $eq: face,
+        },
+      },
+    },
+    populate: {
+      images: {
+        fields: ["url", "alternativeText"],
+      },
+      sizes: {
+        fields: ["value"],
+        populate: {
+          colors: {
+            fields: ["name"],
+          },
+        },
+      },
+    },
+  });
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?populate=*&filters[categories][slug][$eq]=${cat}&[faces][slug][$eq]=${face}`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?${query}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
@@ -69,7 +97,6 @@ export async function fetchProductsByCategory(
         },
       },
     },
-    // populate: "*",
     populate: {
       images: {
         fields: ["url", "alternativeText"],
@@ -175,6 +202,27 @@ export async function fetchProductBySlug(
               },
               pattern: {
                 fields: ["url", "alternativeText"],
+              },
+            },
+          },
+        },
+      },
+      buyWith: {
+        fields: ["name", "slug", "price"],
+        populate: {
+          images: {
+            fields: ["url", "alternativeText"],
+          },
+          sizes: {
+            fields: ["value"],
+            populate: {
+              colors: {
+                fields: ["name"],
+                populate: {
+                  images: {
+                    fields: ["name", "alternativeText", "url", "formats"],
+                  },
+                },
               },
             },
           },

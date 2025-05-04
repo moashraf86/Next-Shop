@@ -17,6 +17,7 @@ import {
 import SizeSelector from "./SizeSelector";
 import ColorSelector from "./ColorSelector";
 import { useRouter, useSearchParams } from "next/navigation";
+import BuyWithProducts from "./BuyWithProducts";
 
 export default function ProductDetails({
   product,
@@ -68,11 +69,13 @@ export default function ProductDetails({
     <section className="container max-w-screen-xl">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 mb-20">
         {/* Product Carousel */}
-        <ProductCarousel
-          images={carouselImages}
-          className="lg:col-span-7"
-          resetCarousel={resetCarousel}
-        />
+        <div className="lg:sticky lg:top-20 lg:col-span-7">
+          <ProductCarousel
+            images={carouselImages}
+            className="lg:sticky lg:top-20 lg:col-span-7"
+            resetCarousel={resetCarousel}
+          />
+        </div>
         {/* Product details */}
         <div className="space-y-6 lg:col-span-5">
           <div className="space-y-6 border-b border-border pb-4">
@@ -86,18 +89,8 @@ export default function ProductDetails({
             </div>
             <ProductRating rating={5} reviews={3} />
           </div>
-          <SizeSelector
-            sizes={product.sizes}
-            // selectedSize={selectedSize}
-            defaultColor={defaultColor}
-            // setSelectedSize={setSelectedSize}
-          />
-          <ColorSelector
-            // selectedSize={selectedSize}
-            colors={availableColors}
-            // selectedColor={selectedColor}
-            // setSelectedColor={setSelectedColor}
-          />
+          <SizeSelector sizes={product.sizes} defaultColor={defaultColor} />
+          <ColorSelector colors={availableColors} />
           <div className="space-y-1">
             <span>Quantity:</span>
             <QuantitySelector
@@ -153,6 +146,7 @@ export default function ProductDetails({
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+          {product.buyWith.length > 0 && <BuyWithProducts product={product} />}
         </div>
       </div>
     </section>
