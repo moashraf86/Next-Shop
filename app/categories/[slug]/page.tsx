@@ -3,14 +3,18 @@ import ProductList from "../../products/ProductList";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import StoreFeatures from "@/components/shared/StoreFeatures";
+import ProductSorting from "@/components/product/ProductSorting";
 
 export default async function CategoryPage({
   params,
+  searchParams,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { slug } = await params;
-
+  const { sort_by } = await searchParams;
   const { categories } = await fetchCategories();
 
   // get current category
@@ -21,7 +25,7 @@ export default async function CategoryPage({
   };
 
   // Fetch products by category
-  const { products } = await fetchProductsByCategory(slug);
+  const { products } = await fetchProductsByCategory(slug, sort_by);
 
   return (
     <main>
@@ -42,7 +46,7 @@ export default async function CategoryPage({
         </div>
       </section>
       {/* Categories Bar */}
-      <div className="border-b border-border mb-10">
+      <div className="border-b border-border">
         <div className="container">
           <div className="flex items-center justify-center gap-10">
             <span className="sticky left-0 text-sm text-gray-500 uppercase font-semibold tracking-[1px]">
@@ -84,9 +88,17 @@ export default async function CategoryPage({
           </div>
         </div>
       </div>
-      <section className="container max-w-screen-xl">
+      {/* Products */}
+      <section className="container max-w-screen-xl py-10">
+        {/* Products numbers / Sorting */}
+        <div className="flex items-center justify-between mb-5">
+          <span className="text-sm">{products.length} Products</span>
+          <ProductSorting />
+        </div>
         <ProductList products={products} />
       </section>
+      {/* Store Features */}
+      <StoreFeatures />
     </main>
   );
 }

@@ -7,9 +7,14 @@ import {
   StrapiResponse,
 } from "./definitions";
 // [1] fetch all products
-export async function fetchAllProducts(): Promise<{ products: Product[] }> {
+export async function fetchAllProducts({
+  sort = "createdAt:desc",
+}: {
+  sort?: string | string[] | undefined;
+}): Promise<{ products: Product[] }> {
   // build deep query string to fetch product by slug with all related data
   const query = qs.stringify({
+    sort: [sort],
     populate: {
       images: {
         fields: ["url", "alternativeText"],
@@ -30,7 +35,7 @@ export async function fetchAllProducts(): Promise<{ products: Product[] }> {
     },
   });
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?${query}&sort=createdAt:desc`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?${query}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
@@ -110,7 +115,8 @@ export async function fetchRelatedProducts(
 
 // [2] fetch by category
 export async function fetchProductsByCategory(
-  slug: string
+  slug: string,
+  sort: string | string[] | undefined = "createdAt:desc"
 ): Promise<{ products: Product[] }> {
   const query = qs.stringify({
     filters: {
@@ -120,6 +126,7 @@ export async function fetchProductsByCategory(
         },
       },
     },
+    sort: [sort],
     populate: {
       categories: {
         fields: ["name", "slug"],
@@ -143,7 +150,7 @@ export async function fetchProductsByCategory(
     },
   });
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?${query}&sort=createdAt:desc`,
+    `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/products?${query}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,

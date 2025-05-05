@@ -1,12 +1,22 @@
+"use server";
 import { fetchAllProducts, fetchCategories } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import ProductList from "../products/ProductList";
+import ProductSorting from "@/components/product/ProductSorting";
 
-export default async function Categories() {
+export default async function Categories({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { sort_by } = await searchParams;
+
   const { categories } = await fetchCategories();
-  const { products } = await fetchAllProducts();
+  const { products } = await fetchAllProducts({
+    sort: sort_by,
+  });
 
   return (
     <main>
@@ -27,7 +37,7 @@ export default async function Categories() {
         </div>
       </section>
       {/* Categories Bar */}
-      <div className="border-b border-border mb-10">
+      <div className="border-b border-border">
         <div className="container">
           <div className="flex items-center justify-center gap-10">
             <span className="sticky left-0 text-sm text-gray-500 uppercase font-semibold tracking-[1px]">
@@ -63,7 +73,12 @@ export default async function Categories() {
           </div>
         </div>
       </div>
-      <section className="container max-w-screen-xl">
+      <section className="container max-w-screen-xl py-10">
+        {/* Total Products Number / Sorting */}
+        <div className="flex items-center justify-between mb-5">
+          <span className="text-sm">{products.length} Products</span>
+          <ProductSorting />
+        </div>
         <ProductList products={products} />
       </section>
     </main>
