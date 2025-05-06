@@ -5,7 +5,6 @@ import { useState, useTransition } from "react";
 import TopProgressBar from "../shared/TopProgressBar";
 
 export default function ProductSorting() {
-  // get search params from URL
   const searchParams = useSearchParams();
   const sortByParam = searchParams.get("sort_by");
   const URL = useRouter();
@@ -30,7 +29,14 @@ export default function ProductSorting() {
     // simulate a delay to show loading state
     setTimeout(() => {
       startTransition(() => {
-        URL.push(`?sort_by=${value}`, { scroll: false });
+        // create a new URLSearchParams object from the current search params
+        const params = new URLSearchParams(searchParams.toString());
+        // Clear old sorting
+        params.delete("sort_by");
+        // Add new sorting value
+        params.set("sort_by", value);
+        // Update URL
+        URL.push(`?${params.toString()}`, { scroll: false });
       });
       setIsLoading(false);
     }, 350);

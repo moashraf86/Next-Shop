@@ -9,11 +9,22 @@ import {
 // [1] fetch all products
 export async function fetchAllProducts({
   sort = "createdAt:desc",
+  size = undefined,
 }: {
   sort?: string | string[] | undefined;
+  size?: string | string[] | undefined;
 }): Promise<{ products: Product[] }> {
   // build deep query string to fetch product by slug with all related data
   const query = qs.stringify({
+    filters: {
+      ...(size && {
+        sizes: {
+          value: {
+            $eq: size,
+          },
+        },
+      }),
+    },
     sort: [sort],
     populate: {
       images: {
@@ -40,7 +51,7 @@ export async function fetchAllProducts({
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
       },
-      next: { revalidate: 60 },
+      next: { revalidate: 3600 },
     }
   );
 
@@ -155,7 +166,7 @@ export async function fetchProductsByCategory(
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
       },
-      next: { revalidate: 60 },
+      next: { revalidate: 3600 },
     }
   );
 

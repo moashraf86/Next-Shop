@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import ProductList from "../products/ProductList";
 import ProductSorting from "@/components/product/ProductSorting";
+import ProductsFilter from "@/components/product/ProductsFilter";
+
+const allSizes = ["32mm", "36mm", "39mm"];
 
 export default async function Categories({
   searchParams,
@@ -12,10 +15,27 @@ export default async function Categories({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { sort_by } = await searchParams;
-
+  const { size } = await searchParams;
   const { categories } = await fetchCategories();
   const { products } = await fetchAllProducts({
     sort: sort_by,
+    size: size,
+  });
+
+  const { products: allProducts } = await fetchAllProducts({
+    sort: sort_by,
+  });
+
+  // get all available sizes for all products
+  const sizes = allProducts.map((product) => product.sizes).flat();
+
+  // get all available sizes for the current products
+  const availableSizes = allSizes.map((size) => {
+    return {
+      id: size,
+      value: size,
+      count: sizes.filter((s) => s.value === size).length,
+    };
   });
 
   return (
@@ -76,7 +96,10 @@ export default async function Categories({
       <section className="container max-w-screen-xl py-10">
         {/* Total Products Number / Sorting */}
         <div className="flex items-center justify-between mb-5">
-          <span className="text-sm">{products.length} Products</span>
+          <div className="flex items-center gap-10">
+            <ProductsFilter sizes={availableSizes} />
+            <span className="text-sm">{products.length} Products</span>
+          </div>
           <ProductSorting />
         </div>
         <ProductList products={products} />
