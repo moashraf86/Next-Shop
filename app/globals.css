@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --background: 0 0% 100%; /* white */
-    --foreground: 0 0 5.1%; /* black */
+    --foreground: 0 0 18.04%; /* black */
     --card: 0 0% 100%;
     --card-foreground: 0 0 5.1%;
     --popover: 0 0% 100%;
@@ -18,6 +18,10 @@
     --muted-foreground: 240 3.8% 46.1%;
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
+    --success: 163.75 37.5% 25.1%;
+    --success-foreground: 0 0% 100%;
+    --emphasis: 210.59 83.61% 11.96%;
+    --emphasis-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
@@ -29,6 +33,17 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    /* Banner color variables */
+    --black: 0 0% 18.04%;
+    --black-foreground: 0 0% 98%;
+    --white: 0 0% 96.08%;
+    --white-foreground: 0 0% 18.04%;
+    --midnight: 222 62% 14%;
+    --midnight-foreground: 0 0% 98%;
+    --green: 162 42% 24%;
+    --green-foreground: 0 0% 98%;
+    --blue: 202 26% 32%;
+    --blue-foreground: 0 0% 98%;
   }
   .dark {
     --background: 0 0 5.1%;
@@ -63,9 +78,38 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-barlow;
   }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-primary font-jost;
+  }
+
+  p,
+  span {
+    @apply font-barlow;
+  }
+
+  a {
+    @apply text-primary;
+  }
+
   .scrollbar-hide {
     scrollbar-width: none;
+  }
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
   }
 }

@@ -4,23 +4,27 @@ import Link from "next/link";
 const categories = [
   {
     name: "Men",
+    slug: "men",
     image: "/categories/men.webp",
     href: "/categories/men",
   },
   {
     name: "Women",
+    slug: "women",
     image: "/categories/women.webp",
     href: "/categories/women",
   },
   {
     name: "Straps & Bands",
+    slug: "straps",
     image: "/categories/straps.webp",
-    href: "/categories/straps",
+    href: "/categories/straps-bands",
   },
   {
     name: "Gift & Pouches",
+    slug: "gifts",
     image: "/categories/gifts.jpg",
-    href: "/products/gifts",
+    href: "/categories/gifts-pouches",
   },
 ];
 

@@ -6,15 +6,21 @@ import { Button } from "../ui/button";
 import Logo from "./Logo";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { UserButton, useUser } from "@clerk/nextjs";
+import { useCart } from "@/hooks/useCart";
 
 export default function Header() {
   const pathname = usePathname();
+  const { user } = useUser();
+  const isSignedIn = !!user;
+  const { cartItems, getTotalItems } = useCart();
+
   return (
     <header
       className={cn(
-        "bg-transparent text-primary-foreground fixed top-0 left-0 right-0 z-10 hover:bg-background hover:text-primary group",
+        "bg-transparent text-primary-foreground fixed top-0 left-0 right-0 z-10 hover:bg-background hover:text-foreground group",
         pathname !== "/" &&
-          "sticky top-0 bg-background text-primary border-b border-border"
+          "sticky top-0 bg-background text-foreground border-b border-border"
       )}
     >
       <div className="mx-auto flex h-16 max-w-screen-xl items-center px-4 sm:px-6 lg:px-8">
@@ -22,7 +28,7 @@ export default function Header() {
         <nav aria-label="Global" className="flex-1">
           <ul className="hidden lg:flex items-center gap-6 text-sm">
             <li>
-              <Link className="text-inherit text-[15px]" href="#">
+              <Link className="text-inherit text-[15px]" href="/categories">
                 Shop
               </Link>
             </li>
@@ -30,6 +36,11 @@ export default function Header() {
             <li>
               <Link className="text-inherit text-[15px]" href="#">
                 Collections
+              </Link>
+            </li>
+            <li>
+              <Link className="text-inherit text-[15px]" href="/orders">
+                My Orders
               </Link>
             </li>
           </ul>
@@ -65,15 +76,36 @@ export default function Header() {
         {/* Actions */}
         <div className="flex items-center gap-4 flex-1 justify-end">
           <div className="flex gap-5">
-            <Link href="/search">
+            <Link
+              href="/search"
+              className="flex justify-center items-center size-7"
+            >
               <Search className="block size-5 text-inherit " />
             </Link>
-            <Link href="/login">
-              <UserRound className="block size-5 text-inherit" />
-            </Link>
-            <Link href="/cart">
+
+            <Link
+              href="/cart"
+              className="relative flex justify-center items-center size-7"
+            >
               <ShoppingBag className="block size-5 text-inherit" />
+              <span>
+                {cartItems?.length > 0 && (
+                  <span className="absolute top-0 -right-1 flex items-center justify-center min-w-4 min-h-4 ps-1 pe-1 text-[9px] font-medium text-white bg-primary rounded-full">
+                    {getTotalItems()}
+                  </span>
+                )}
+              </span>
             </Link>
+            {isSignedIn ? (
+              <UserButton afterSwitchSessionUrl="/sign-in" />
+            ) : (
+              <Link
+                href="/sign-in"
+                className="flex justify-center items-center size-7"
+              >
+                <UserRound className="block size-5 text-inherit" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

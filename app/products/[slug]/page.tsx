@@ -1,19 +1,45 @@
-import { fetchProductById } from "@/lib/data";
-import ProductCard from "../ProductCard";
+import { fetchProductBySlug } from "@/lib/data";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import ProductDetails from "@/components/product/ProductDetails";
+import RelatedProducts from "@/components/product/RelatedProducts";
+import ProductBanner from "@/components/product/ProductBanner";
+import FAQ from "@/components/shared/FAQ";
+import StoreFeatures from "@/components/shared/StoreFeatures";
 
-export default async function ProductDetails({
+export default async function Product({
   params,
 }: {
   params: { slug: string };
 }) {
   const { slug } = await params;
-
-  // Fetch product by ID
-  const { product } = await fetchProductById(slug);
+  // Fetch product by Slug
+  const { product } = await fetchProductBySlug(slug);
 
   return (
-    <div>
-      <ProductCard product={product} />
-    </div>
+    <main>
+      <Breadcrumb className="container max-w-screen-xl">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>/</BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbPage>{product.name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <ProductDetails product={product} />
+      <ProductBanner product={product} />
+      <RelatedProducts product={product} />
+      <FAQ />
+      <StoreFeatures />
+    </main>
   );
 }
