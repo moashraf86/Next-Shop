@@ -38,6 +38,11 @@ export default function ProductDetails({
   const availableColors =
     product.sizes?.find((size) => size.value === selectedSize)?.colors || [];
 
+  const filteredColors = availableColors.map((color) => ({
+    id: crypto.randomUUID().slice(0, 3),
+    name: color.name,
+  }));
+
   const carouselImages =
     availableColors.find((color) => color.name === selectedColor)?.images ?? [];
 
@@ -46,7 +51,7 @@ export default function ProductDetails({
   const [quantity, setQuantity] = useState<number>(initialQuantity);
 
   // Handle Product Color Change
-  const handleColorChange = (value: string) => {
+  const handleColorChange = (value: string | string[]) => {
     URL.push(`?size=${searchParams.get("size")}&color=${value}`, {
       scroll: false,
     });
@@ -87,11 +92,16 @@ export default function ProductDetails({
             <ProductRating rating={5} reviews={3} />
           </div>
           <SizeSelector sizes={product.sizes} defaultColor={defaultColor} />
-          <ColorSelector
-            colors={availableColors}
-            selectedColors={[selectedColor]}
-            handleColorChange={handleColorChange}
-          />
+          <div className="space-y-2">
+            <span>Strap: {selectedColor}</span>
+            <ColorSelector
+              colors={availableColors}
+              availableColors={filteredColors}
+              selectedColors={[selectedColor]}
+              onColorChange={handleColorChange}
+              mode="single"
+            />
+          </div>
           <div className="space-y-1">
             <span>Quantity:</span>
             <QuantitySelector

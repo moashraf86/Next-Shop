@@ -1,4 +1,5 @@
 "use client";
+
 import { ListFilter } from "lucide-react";
 import {
   Sheet,
@@ -15,114 +16,75 @@ import {
 } from "../ui/accordion";
 import { Checkbox } from "../ui/checkbox";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
-import TopProgressBar from "../shared/TopProgressBar";
+import { useEffect, useState } from "react";
 import { Color, Size } from "@/lib/definitions";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
+import ColorSelector from "./ColorSelector";
+
+type ProductsFilterProps = {
+  sizes: Size[];
+  colors: Color[];
+  availableColors: { id: string; name: string | undefined }[];
+};
 
 export default function ProductsFilter({
   sizes,
   colors,
   availableColors,
-}: {
-  sizes: Size[];
-  colors: Color[];
-  availableColors: { id: string; name: string | undefined }[];
-}) {
+}: ProductsFilterProps) {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [paramsCount, setParamsCount] = useState(0);
-  const [isPending, startTransition] = useTransition();
-  const [isLoading, setIsLoading] = useState(false);
 
   const searchParams = useSearchParams();
-  const URL = useRouter();
+  const router = useRouter();
 
-  // handle size change
+  const updateQueryParam = (key: string, values: string[]) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(key);
+    values.forEach((value) => params.append(key, value));
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
   const handleSizeChange = (size: string) => {
-    setIsLoading(true);
-    const currentSizes = new Set(selectedSizes);
-    if (currentSizes.has(size)) {
-      currentSizes.delete(size);
+    const current = new Set(selectedSizes);
+    if (current.has(size)) {
+      current.delete(size);
     } else {
-      currentSizes.add(size);
+      current.add(size);
     }
-
-    // Convert Set back to Array
-    const newSelectedSizes = Array.from(currentSizes);
-    setSelectedSizes(newSelectedSizes);
-
-    setTimeout(() => {
-      startTransition(() => {
-        // create a new URLSearchParams object from the current search params
-        const params = new URLSearchParams(searchParams.toString());
-        // Clear old filters
-        params.delete("size");
-        // Add all selected sizes
-        newSelectedSizes.forEach((size) => params.append("size", size));
-        // Update URL
-        URL.push(`?${params.toString()}`, { scroll: false });
-      });
-      setIsLoading(false);
-    }, 350);
+    const newSelected = Array.from(current);
+    setSelectedSizes(newSelected);
+    updateQueryParam("size", newSelected);
   };
 
-  // handle color change
-  const handleColorChange = (color: string) => {
-    setIsLoading(true);
-    const currentColors = new Set(selectedColors);
-    if (currentColors.has(color)) {
-      currentColors.delete(color);
-    } else {
-      currentColors.add(color);
-    }
-
-    // Convert Set back to Array
-    const newSelectedColors = Array.from(currentColors);
-    setSelectedColors(newSelectedColors);
-
-    setTimeout(() => {
-      startTransition(() => {
-        // create a new URLSearchParams object from the current search params
-        const params = new URLSearchParams(searchParams.toString());
-        // Clear old filters
-        params.delete("color");
-        // Add all selected sizes
-        newSelectedColors.forEach((color) => params.append("color", color));
-        // Update URL
-        URL.push(`?${params.toString()}`, { scroll: false });
-      });
-      setIsLoading(false);
-    }, 350);
+  const handleColorChange = (colors: string | string[]) => {
+    const newSelected = Array.isArray(colors) ? colors : [colors];
+    setSelectedColors(newSelected);
+    updateQueryParam("color", newSelected);
   };
 
-  // Set initial selected sizes from URL
   useEffect(() => {
     const sizeValues = searchParams.getAll("size");
     const colorValues = searchParams.getAll("color");
+
     setSelectedSizes(sizeValues);
     setSelectedColors(colorValues);
 
-    // check valid colors
+    // Sanitize invalid values
     const validColors = colorValues.filter((color) =>
       availableColors.some((c) => c.name === color)
     );
 
     const params = new URLSearchParams(searchParams.toString());
-
     params.delete("color");
     validColors.forEach((c) => params.append("color", c));
-    URL.replace(`?${params.toString()}`, { scroll: false });
+    router.replace(`?${params.toString()}`, { scroll: false });
 
-    const count = sizeValues.length + colorValues.length;
-    setParamsCount(count);
+    setParamsCount(sizeValues.length + validColors.length);
   }, [searchParams]);
 
   return (
     <>
-      <TopProgressBar trigger={isLoading || isPending} />
       <Sheet>
         <SheetTrigger className="flex items-center gap-2">
           <ListFilter className="h-4 w-4 text-muted-foreground" />
@@ -172,46 +134,13 @@ export default function ProductsFilter({
                   Strap Color
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="grid grid-cols-[repeat(auto-fit,40px)] gap-3 p-1">
-                    {colors.map((color) => {
-                      const isAvailable = availableColors.some(
-                        (c) => c.name === color.name
-                      );
-                      const isChecked =
-                        selectedColors.includes(color.name) && isAvailable;
-                      return (
-                        <Button
-                          title={color.name}
-                          key={color.name}
-                          variant="outline"
-                          className={cn(
-                            "relative text-sm font-barlow font-normal lowercase w-9 h-9 shadow-none border-0 p-[1px] after:absolute after:content-[''] after:inset-[-3px] after:bg-transparent after:border-2 after:border-primary after:z-[-1] after:transition-transform after:duration-200 after:ease",
-                            {
-                              "after:scale-100 after:opacity-100":
-                                isChecked && isAvailable,
-                              "after:scale-90 after:opacity-0":
-                                !isChecked || !isAvailable,
-                              "!opacity-90": !isAvailable,
-                            }
-                          )}
-                          onClick={() => handleColorChange(color.name)}
-                          disabled={!isAvailable}
-                        >
-                          <Image
-                            src={color.pattern.url}
-                            alt={color.pattern.alternativeText}
-                            width={20}
-                            height={20}
-                            className="object-cover object-center w-full h-full"
-                          />
-                          <span
-                            className="absolute top-0 right-0 w-[calc((100%*1.4142)-2px)] h-0.5 bg-white transform origin-right -rotate-45"
-                            hidden={isAvailable}
-                          ></span>
-                        </Button>
-                      );
-                    })}
-                  </div>
+                  <ColorSelector
+                    colors={colors}
+                    availableColors={availableColors}
+                    selectedColors={selectedColors}
+                    onColorChange={handleColorChange}
+                    mode="multiple"
+                  />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
