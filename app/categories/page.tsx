@@ -6,35 +6,71 @@ import Link from "next/link";
 import ProductList from "../products/ProductList";
 import ProductSorting from "@/components/product/ProductSorting";
 import ProductsFilter from "@/components/product/ProductsFilter";
+import { Color, Size } from "@/lib/definitions";
 
-const allSizes = ["32mm", "36mm", "39mm"];
+const ALL_SIZES = ["32mm", "36mm", "39mm"];
 
 export default async function Categories({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { sort_by } = await searchParams;
-  const { size } = await searchParams;
-  const { categories } = await fetchCategories();
-  const { products } = await fetchAllProducts({
-    sort: sort_by,
-    size: size,
-  });
+  const { sort_by, size, color } = await searchParams;
 
-  const { products: allProducts } = await fetchAllProducts({
-    sort: sort_by,
-  });
+  const [{ categories }, { products }, { products: allProducts }] =
+    await Promise.all([
+      fetchCategories(),
+      fetchAllProducts({ sort: sort_by, size, color }),
+      fetchAllProducts({ sort: sort_by }),
+    ]);
 
-  // get all available sizes for all products
-  const sizes = allProducts.map((product) => product.sizes).flat();
+  // Flattened arrays of sizes and colors from all products
+  const allSizesData = allProducts.flatMap((product) => product.sizes);
+  const allColorsData = allSizesData.flatMap((size) => size.colors);
 
-  // get all available sizes for the current products
-  const availableSizes = allSizes.map((size) => {
+  // Get available sizes
+  const availableSizes: Size[] = ALL_SIZES.map((size) => {
     return {
-      id: size,
+      id: crypto.randomUUID().slice(0, 3),
       value: size,
-      count: sizes.filter((s) => s.value === size).length,
+      count: allSizesData.filter((s) => s.value === size).length,
+    };
+  });
+
+  // Deduplicate colors by name
+  function deduplicateColors(colors: Color[]) {
+    const uniqueMap = new Map();
+    colors.forEach((color) => {
+      if (!uniqueMap.has(color.name)) {
+        uniqueMap.set(color.name, {
+          id: crypto.randomUUID().slice(0, 3),
+          name: color.name,
+          pattern: color.pattern,
+          images: color.images,
+        });
+      }
+    });
+    return Array.from(uniqueMap.values());
+  }
+
+  // Get all available colors
+  const allColors = deduplicateColors(
+    allColorsData.filter((color): color is Color => color !== undefined)
+  );
+
+  const filteredSizes = products.flatMap((p) => p.sizes);
+  const availableColors = size
+    ? filteredSizes
+        .filter((s) => size.includes(s.value))
+        .flatMap((s) => s.colors)
+    : filteredSizes.flatMap((s) => s.colors);
+
+  const uniqueAvailableColors = Array.from(
+    new Set(availableColors.map((color) => color?.name))
+  ).map((name) => {
+    return {
+      id: crypto.randomUUID().slice(0, 4),
+      name,
     };
   });
 
@@ -97,7 +133,11 @@ export default async function Categories({
         {/* Total Products Number / Sorting */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-10">
-            <ProductsFilter sizes={availableSizes} />
+            <ProductsFilter
+              sizes={availableSizes}
+              colors={allColors}
+              availableColors={uniqueAvailableColors}
+            />
             <span className="text-sm">{products.length} Products</span>
           </div>
           <ProductSorting />

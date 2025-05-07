@@ -4,7 +4,7 @@ import ProductDescription from "./ProductDescription";
 import ProductPrice from "./ProductPrice";
 import QuantitySelector from "../shared/QuantitySelector";
 import ProductActions from "./ProductActions";
-import { Product, StrapiImage } from "@/lib/definitions";
+import { Product } from "@/lib/definitions";
 import { useEffect, useState } from "react";
 import ProductCarousel from "./ProductCarousel";
 import ProductRating from "./ProductRating";
@@ -27,42 +27,39 @@ export default function ProductDetails({
   initialQuantity?: number;
 }) {
   const searchParams = useSearchParams();
-  const url = useRouter();
-  const defaultSize = product.sizes[0].value;
+  const URL = useRouter();
+
+  const defaultSize = product.sizes?.[0].value ?? "";
   const selectedSize = searchParams.get("size") || defaultSize;
-  const defaultColor = product.sizes[0].colors[0].name;
+
+  const defaultColor = product.sizes?.[0].colors?.[0].name ?? "";
   const selectedColor = searchParams.get("color") || defaultColor;
-  // get product selected color image
-  const selectedCarouselImages =
-    product.sizes
-      .find((size) => size.value === selectedSize)
-      ?.colors.find((color) => color.name === selectedColor)?.images || [];
+
+  const availableColors =
+    product.sizes?.find((size) => size.value === selectedSize)?.colors || [];
+
+  const carouselImages =
+    availableColors.find((color) => color.name === selectedColor)?.images ?? [];
+
+  const [resetCarousel, setResetCarousel] = useState(false);
 
   const [quantity, setQuantity] = useState<number>(initialQuantity);
-  const [carouselImages, setCarouselImages] = useState<StrapiImage[]>(
-    selectedCarouselImages || []
-  );
-  const [resetCarousel, setResetCarousel] = useState(false);
-  const availableColors =
-    product.sizes.find((size) => size.value === selectedSize)?.colors || [];
 
+  // Handle Product Color Change
+  const handleColorChange = (value: string) => {
+    URL.push(`?size=${searchParams.get("size")}&color=${value}`, {
+      scroll: false,
+    });
+  };
+
+  // Update carousel images when selected size or color changes
   useEffect(() => {
-    // change carousel images based on selected size and color
-    const updatedCarouselImages =
-      product.sizes
-        .find((size) => size.value === selectedSize)
-        ?.colors.find((color) => color.name === selectedColor)?.images || [];
+    setResetCarousel((prev) => !prev);
+  }, [selectedSize, selectedColor]);
 
-    console.log("carouselImages", updatedCarouselImages);
-    // set resetCarousel to true to trigger a re-render
-    setResetCarousel(() => !resetCarousel);
-    setCarouselImages(updatedCarouselImages);
-  }, [searchParams, selectedColor]);
-
-  // renders only once on initial load
+  // Set default URL params on first render
   useEffect(() => {
-    // set default color to the first available color url does not include these params
-    url.push(`?size=${selectedSize}&color=${selectedColor}`);
+    URL.push(`?size=${selectedSize}&color=${selectedColor}`);
   }, []);
 
   return (
@@ -90,7 +87,11 @@ export default function ProductDetails({
             <ProductRating rating={5} reviews={3} />
           </div>
           <SizeSelector sizes={product.sizes} defaultColor={defaultColor} />
-          <ColorSelector colors={availableColors} />
+          <ColorSelector
+            colors={availableColors}
+            selectedColors={[selectedColor]}
+            handleColorChange={handleColorChange}
+          />
           <div className="space-y-1">
             <span>Quantity:</span>
             <QuantitySelector

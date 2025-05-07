@@ -10,20 +10,21 @@ import {
 export async function fetchAllProducts({
   sort = "createdAt:desc",
   size = undefined,
+  color = undefined,
 }: {
   sort?: string | string[] | undefined;
   size?: string | string[] | undefined;
+  color?: string | string[] | undefined;
 }): Promise<{ products: Product[] }> {
   // build deep query string to fetch product by slug with all related data
   const query = qs.stringify({
     filters: {
-      ...(size && {
-        sizes: {
-          value: {
-            $eq: size,
-          },
+      sizes: {
+        value: { $eq: size },
+        colors: {
+          name: { $eq: color },
         },
-      }),
+      },
     },
     sort: [sort],
     populate: {
@@ -37,6 +38,9 @@ export async function fetchAllProducts({
             fields: ["name"],
             populate: {
               images: {
+                fields: ["url", "alternativeText"],
+              },
+              pattern: {
                 fields: ["url", "alternativeText"],
               },
             },
