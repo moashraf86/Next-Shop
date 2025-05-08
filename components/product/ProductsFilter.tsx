@@ -16,9 +16,10 @@ import {
 } from "../ui/accordion";
 import { Checkbox } from "../ui/checkbox";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Color, Size } from "@/lib/definitions";
 import ColorSelector from "./ColorSelector";
+import { useWindowScroll } from "@uidotdev/usehooks";
 
 type ProductsFilterProps = {
   sizes: Size[];
@@ -38,6 +39,18 @@ export default function ProductsFilter({
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const ref = useRef<HTMLButtonElement>(null);
+  const [{ y: pageScrollY }, scrollTo] = useWindowScroll();
+
+  const scrollToProducts = () => {
+    scrollTo({
+      top: ref.current
+        ? ref.current.getBoundingClientRect().top + (pageScrollY ?? 0) - 100
+        : pageScrollY,
+      behavior: "smooth",
+    });
+  };
+
   const updateQueryParam = (key: string, values: string[]) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete(key);
@@ -46,6 +59,7 @@ export default function ProductsFilter({
   };
 
   const handleSizeChange = (size: string) => {
+    scrollToProducts();
     const current = new Set(selectedSizes);
     if (current.has(size)) {
       current.delete(size);
@@ -58,6 +72,7 @@ export default function ProductsFilter({
   };
 
   const handleColorChange = (colors: string | string[]) => {
+    scrollToProducts();
     const newSelected = Array.isArray(colors) ? colors : [colors];
     setSelectedColors(newSelected);
     updateQueryParam("color", newSelected);
@@ -86,7 +101,10 @@ export default function ProductsFilter({
   return (
     <>
       <Sheet>
-        <SheetTrigger className="flex items-center gap-2">
+        <SheetTrigger
+          className="flex items-center gap-2 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring"
+          ref={ref}
+        >
           <ListFilter className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-barlow">Show Filters</span>
         </SheetTrigger>

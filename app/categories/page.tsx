@@ -130,19 +130,30 @@ export default async function Categories({
         </div>
       </div>
       <section className="container max-w-screen-xl py-10">
-        {/* Total Products Number / Sorting */}
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-10">
+        {/* Filters - Products Number - Sorting /*/}
+        <div className="grid grid-cols-2 mb-5 gap-4">
+          <div className="flex items-center gap-10 col-span-1">
             <ProductsFilter
               sizes={availableSizes}
               colors={allColors}
               availableColors={uniqueAvailableColors}
             />
-            <span className="text-sm">{products.length} Products</span>
+            <span className="hidden md:inline-block text-sm ">
+              {products.length} Products
+            </span>
           </div>
-          <ProductSorting />
+          <div className="col-span-1 flex justify-end md:order-1">
+            <ProductSorting />
+          </div>
+          <span className="md:hidden text-sm text-center col-span-2">
+            {products.length} Products
+          </span>
         </div>
-        <ProductList products={products} />
+        <ProductList
+          products={products}
+          selectedSize={size}
+          selectedColor={color}
+        />
       </section>
     </main>
   );
