@@ -20,6 +20,7 @@ import { useEffect, useRef, useState } from "react";
 import { Color, Size } from "@/lib/definitions";
 import ColorSelector from "./ColorSelector";
 import { useWindowScroll } from "@uidotdev/usehooks";
+import { cn } from "@/lib/utils";
 
 type ProductsFilterProps = {
   sizes: Size[];
@@ -129,21 +130,39 @@ export default function ProductsFilter({
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4">
-                    {sizes.map((size) => (
-                      <div key={size.id} className="flex items-center gap-2">
-                        <Checkbox
-                          id={size.value}
-                          onCheckedChange={() => handleSizeChange(size.value)}
-                          checked={selectedSizes.includes(size.value)}
-                        />
-                        <label
-                          htmlFor={size.value}
-                          className="font-barlow text-sm cursor-pointer"
+                    {sizes.map((size) => {
+                      const sizeColors = size.colors?.map(
+                        (color) => color.name
+                      );
+                      const isAvailable = sizeColors?.some(
+                        (color) =>
+                          selectedColors.includes(color) ||
+                          selectedColors.length === 0
+                      );
+                      return (
+                        <div
+                          key={size.id}
+                          className={cn("flex items-center gap-2", {
+                            "opacity-50 [&>label]:cursor-not-allowed":
+                              !isAvailable,
+                          })}
                         >
-                          {size.value} ({size.count})
-                        </label>
-                      </div>
-                    ))}
+                          <Checkbox
+                            className="disabled:cursor-not-allowed disabled:bg-gray-400"
+                            id={size.value}
+                            onCheckedChange={() => handleSizeChange(size.value)}
+                            checked={selectedSizes.includes(size.value)}
+                            disabled={!isAvailable}
+                          />
+                          <label
+                            htmlFor={size.value}
+                            className="font-barlow text-sm cursor-pointer"
+                          >
+                            {size.value} ({size.count})
+                          </label>
+                        </div>
+                      );
+                    })}
                   </div>
                 </AccordionContent>
               </AccordionItem>

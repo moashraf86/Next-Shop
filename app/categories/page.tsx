@@ -30,10 +30,23 @@ export default async function Categories({
 
   // Get available sizes
   const availableSizes: Size[] = ALL_SIZES.map((size) => {
+    const matchingSizes = allSizesData.filter((s) => s.value === size);
+
+    // Deduplicate colors by name
+    const uniqueColorsMap = new Map();
+    matchingSizes.forEach((s) => {
+      s.colors?.forEach((color) => {
+        if (!uniqueColorsMap.has(color.name)) {
+          uniqueColorsMap.set(color.name, color);
+        }
+      });
+    });
+
     return {
       id: crypto.randomUUID().slice(0, 3),
       value: size,
-      count: allSizesData.filter((s) => s.value === size).length,
+      count: matchingSizes.length,
+      colors: Array.from(uniqueColorsMap.values()),
     };
   });
 
