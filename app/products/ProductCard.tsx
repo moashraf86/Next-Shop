@@ -2,24 +2,56 @@ import { Product } from "../../lib/definitions";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function ProductCard({ product }: { product: Product }) {
-  // const isBestselling = product.categories.some(
-  //   (cat) => cat.name === "bestselling"
-  // );
+export default function ProductCard({
+  product,
+  selectedColor,
+  selectedSize,
+}: {
+  product: Product;
+  selectedColor?: string | string[] | undefined;
+  selectedSize?: string | string[] | undefined;
+}) {
+  // check if the params are arrays or undefined
+  const size = Array.isArray(selectedSize)
+    ? product.sizes?.[0]?.value
+    : selectedSize;
 
-  const size = product.sizes?.[0]?.value ?? null;
-  const color = product.sizes?.[0]?.colors?.[0]?.name ?? null;
+  const color =
+    Array.isArray(selectedColor) || !selectedColor
+      ? product.sizes?.[0]?.colors?.[0]?.name
+      : selectedColor;
+
+  // Get chosen size and color
+  let chosenSize = product.sizes?.find((s) => s.value === size);
+  // if no size selected but color selected, find the size that has the color
+  if (!chosenSize && color) {
+    chosenSize = product.sizes?.find((sizeObj) =>
+      sizeObj.colors?.some((colorObj) => colorObj.name === color)
+    );
+  }
+  // if no size or color selected, fallback to the first size and color
+  if (!chosenSize) {
+    chosenSize = product.sizes?.[0];
+  }
+
+  // Get the chosen color from the chosen size
+  const chosenColor = chosenSize?.colors?.find((c) => c.name === color);
+
+  // Get the first image of the chosen color or fallback to the first image of the product
+  const image = chosenColor?.images?.[0] || product.images[0];
+  const imageUrl = image?.url;
+  const imageAlt = image?.alternativeText;
 
   return (
     <Link
-      href={`/products/${product.slug}?size=${size}&color=${color}`}
+      href={`/products/${product.slug}?size=${chosenSize?.value}&color=${chosenColor?.name}`}
       className="grid gap-4 overflow-hidden"
     >
       <div className="group aspect-[3/4] relative overflow-hidden bg-gray-100">
         <Image
           className="group-hover:opacity-0 object-cover transition-opacity duration-300"
-          src={product.images[0].formats?.large.url || product.images[0].url}
-          alt={product.images[0].alternativeText}
+          src={imageUrl}
+          alt={imageAlt}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
