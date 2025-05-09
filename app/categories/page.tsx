@@ -15,12 +15,12 @@ export default async function Categories({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { sort_by, size, color } = await searchParams;
+  const { sort_by, size, color, price_min, price_max } = await searchParams;
 
   const [{ categories }, { products }, { products: allProducts }] =
     await Promise.all([
       fetchCategories(),
-      fetchAllProducts({ sort: sort_by, size, color }),
+      fetchAllProducts({ sort: sort_by, size, color, price_min, price_max }),
       fetchAllProducts({ sort: sort_by }),
     ]);
 

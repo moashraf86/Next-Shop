@@ -11,20 +11,38 @@ export async function fetchAllProducts({
   sort = "createdAt:desc",
   size = undefined,
   color = undefined,
+  price_min = undefined,
+  price_max = undefined,
 }: {
   sort?: string | string[] | undefined;
   size?: string | string[] | undefined;
   color?: string | string[] | undefined;
+  price_min?: string | string[] | undefined;
+  price_max?: string | string[] | undefined;
 }): Promise<{ products: Product[] }> {
   // build deep query string to fetch product by slug with all related data
   const query = qs.stringify({
     filters: {
-      sizes: {
-        value: { $eq: size },
-        colors: {
-          name: { $eq: color },
+      ...(size && {
+        sizes: {
+          value: { $eq: size },
         },
-      },
+      }),
+      ...(color && {
+        sizes: {
+          colors: {
+            name: { $eq: color },
+          },
+        },
+      }),
+      ...(price_min !== undefined || price_max !== undefined
+        ? {
+            price: {
+              ...(price_min !== undefined && { $gte: price_min }),
+              ...(price_max !== undefined && { $lte: price_max }),
+            },
+          }
+        : {}),
     },
     sort: [sort],
     populate: {
