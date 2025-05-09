@@ -1,4 +1,3 @@
-"use server";
 import { fetchAllProducts, fetchCategories } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -6,30 +5,35 @@ import Link from "next/link";
 import ProductList from "../products/ProductList";
 import ProductSorting from "@/components/product/ProductSorting";
 import ProductsFilter from "@/components/product/ProductsFilter";
-import { Color, Size } from "@/lib/definitions";
+import { Size } from "@/lib/definitions";
 
 const ALL_SIZES = ["32mm", "36mm", "39mm"];
 
 export default async function Categories({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const { sort_by, size, color, price_min, price_max } = await searchParams;
 
-  const [{ categories }, { products }, { products: allProducts }] =
-    await Promise.all([
-      fetchCategories(),
-      fetchAllProducts({ sort: sort_by, size, color, price_min, price_max }),
-      fetchAllProducts({ sort: sort_by }),
-    ]);
+  const [
+    { categories },
+    { products },
+    { products: allProducts },
+    { products: productsForAvailableSizes },
+  ] = await Promise.all([
+    fetchCategories(),
+    fetchAllProducts({ sort: sort_by, size, color, price_min, price_max }),
+    fetchAllProducts({ sort: sort_by }),
+    fetchAllProducts({ sort: sort_by, color, price_min, price_max }),
+  ]);
 
   // Flattened arrays of sizes and colors from all products
   const allSizesData = allProducts.flatMap((product) => product.sizes);
   const allColorsData = allSizesData.flatMap((size) => size.colors);
 
-  // Get available sizes
-  const availableSizes: Size[] = ALL_SIZES.map((size) => {
+  // Get All sizes with its colors
+  const allSizes: Size[] = ALL_SIZES.map((size) => {
     const matchingSizes = allSizesData.filter((s) => s.value === size);
 
     // Deduplicate colors by name
@@ -50,42 +54,54 @@ export default async function Categories({
     };
   });
 
-  // Deduplicate colors by name
-  function deduplicateColors(colors: Color[]) {
-    const uniqueMap = new Map();
-    colors.forEach((color) => {
-      if (!uniqueMap.has(color.name)) {
-        uniqueMap.set(color.name, {
+  // Get available sizes only
+  const availableSizesMap = new Map();
+  productsForAvailableSizes
+    .flatMap((p) => p.sizes)
+    .forEach((size) => {
+      if (!availableSizesMap.has(size.value)) {
+        availableSizesMap.set(size.value, {
           id: crypto.randomUUID().slice(0, 3),
-          name: color.name,
-          pattern: color.pattern,
-          images: color.images,
+          value: size.value,
+          count: size.count,
+          colors: size.colors,
         });
       }
     });
-    return Array.from(uniqueMap.values());
-  }
+  // ALL AVAILABLE SIZES
+  const availableSizes = Array.from(availableSizesMap.values());
 
-  // Get all available colors
-  const allColors = deduplicateColors(
-    allColorsData.filter((color): color is Color => color !== undefined)
-  );
-
-  const filteredSizes = products.flatMap((p) => p.sizes);
-  const availableColors = size
-    ? filteredSizes
-        .filter((s) => size.includes(s.value))
-        .flatMap((s) => s.colors)
-    : filteredSizes.flatMap((s) => s.colors);
-
-  const uniqueAvailableColors = Array.from(
-    new Set(availableColors.map((color) => color?.name))
-  ).map((name) => {
-    return {
-      id: crypto.randomUUID().slice(0, 4),
-      name,
-    };
+  // Get all colors
+  const allColorsMap = new Map();
+  allColorsData.forEach((color) => {
+    if (!allColorsMap.has(color?.name)) {
+      allColorsMap.set(color?.name, {
+        id: crypto.randomUUID().slice(0, 3),
+        name: color?.name,
+        pattern: color?.pattern,
+        images: color?.images,
+      });
+    }
   });
+  const allColors = Array.from(allColorsMap.values());
+
+  //Get available colors only
+  const availableColorsMap = new Map();
+  products
+    .flatMap((p) => p.sizes)
+    .flatMap((s) => s.colors)
+    .forEach((color) => {
+      if (!availableColorsMap.has(color?.name)) {
+        availableColorsMap.set(color?.name, {
+          id: crypto.randomUUID().slice(0, 3),
+          name: color?.name,
+          pattern: color?.pattern,
+          images: color?.images,
+        });
+      }
+    });
+  // ALL AVAILABLE COLORS
+  const availableColors = Array.from(availableColorsMap.values());
 
   return (
     <main>
@@ -147,9 +163,10 @@ export default async function Categories({
         <div className="grid grid-cols-2 mb-5 gap-4">
           <div className="flex items-center gap-10 col-span-1">
             <ProductsFilter
-              sizes={availableSizes}
+              sizes={allSizes}
               colors={allColors}
-              availableColors={uniqueAvailableColors}
+              availableSizes={availableSizes}
+              availableColors={availableColors}
             />
             <span className="hidden md:inline-block text-sm ">
               {products.length} Products
