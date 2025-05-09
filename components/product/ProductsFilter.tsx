@@ -21,29 +21,29 @@ import { Color, Size } from "@/lib/definitions";
 import ColorSelector from "./ColorSelector";
 import { useWindowScroll } from "@uidotdev/usehooks";
 import { cn } from "@/lib/utils";
-import { Slider } from "../ui/slider";
+import PriceFilter from "./PriceFilter";
 
 type ProductsFilterProps = {
   sizes: Size[];
   colors: Color[];
+  availableSizes: { id: string; value: string | undefined; colors: Color[] }[];
   availableColors: { id: string; name: string | undefined }[];
 };
 
 const MIN_PRICE = 100;
 const MAX_PRICE = 1000;
-const STEP = 10;
+
 const DEFAULT_RANGE: [number, number] = [MIN_PRICE, MAX_PRICE];
 export default function ProductsFilter({
   sizes,
   colors,
+  availableSizes,
   availableColors,
 }: ProductsFilterProps) {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [paramsCount, setParamsCount] = useState(0);
   const [range, setRange] = useState<[number, number]>(DEFAULT_RANGE);
-  const [tempMin, setTempMin] = useState(range[0]);
-  const [tempMax, setTempMax] = useState(range[1]);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -95,35 +95,6 @@ export default function ProductsFilter({
     scrollToProducts();
   };
 
-  // Handle key events
-  const handleBlurMin = () => {
-    const minPrice = Math.min(tempMin, range[1]);
-
-    if (isNaN(minPrice)) {
-      setTempMin(MIN_PRICE);
-      return;
-    } else if (minPrice < MIN_PRICE) {
-      setTempMin(MIN_PRICE);
-    }
-
-    const newMin = Math.min(minPrice, range[1] - 1);
-    commitRangeChange([newMin, range[1]]);
-  };
-
-  const handleBlurMax = () => {
-    const maxPrice = Math.max(tempMax, range[0]);
-
-    if (isNaN(maxPrice)) {
-      setTempMax(MAX_PRICE);
-      return;
-    } else if (maxPrice > MAX_PRICE) {
-      setTempMax(MAX_PRICE);
-    }
-
-    const newMax = Math.max(maxPrice, range[0] + 1);
-    commitRangeChange([range[0], newMax]);
-  };
-
   useEffect(() => {
     const sizeValues = searchParams.getAll("size");
     const colorValues = searchParams.getAll("color");
@@ -148,12 +119,6 @@ export default function ProductsFilter({
 
     setParamsCount(sizeValues.length + validColors.length);
   }, [searchParams]);
-
-  // Sync input values when range changes externally
-  useEffect(() => {
-    setTempMin(range[0]);
-    setTempMax(range[1]);
-  }, [range]);
 
   return (
     <>
@@ -187,14 +152,11 @@ export default function ProductsFilter({
                 <AccordionContent>
                   <div className="space-y-4">
                     {sizes.map((size) => {
-                      const sizeColors = size.colors?.map(
-                        (color) => color.name
+                      const isAvailable = availableSizes?.some(
+                        (sizeObj) => sizeObj.value === size.value
                       );
-                      const isAvailable = sizeColors?.some(
-                        (color) =>
-                          selectedColors.includes(color) ||
-                          selectedColors.length === 0
-                      );
+                      const isSelected = selectedSizes.includes(size.value);
+
                       return (
                         <div
                           key={size.id}
@@ -207,7 +169,7 @@ export default function ProductsFilter({
                             className="disabled:cursor-not-allowed disabled:bg-gray-400"
                             id={size.value}
                             onCheckedChange={() => handleSizeChange(size.value)}
-                            checked={selectedSizes.includes(size.value)}
+                            checked={isSelected}
                             disabled={!isAvailable}
                           />
                           <label
@@ -246,64 +208,10 @@ export default function ProductsFilter({
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="space-y-4">
-                    <Slider
-                      min={MIN_PRICE}
-                      max={MAX_PRICE}
-                      step={STEP}
-                      value={range}
-                      defaultValue={DEFAULT_RANGE}
-                      onValueChange={commitRangeChange}
-                    />
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex items-center border border-border col-span-1 px-2.5 py-2">
-                        <span className="font-barlow text-xs">$</span>
-                        <input
-                          type="number"
-                          name="min"
-                          id="min"
-                          inputMode="numeric"
-                          max={range[1] - STEP}
-                          value={tempMin}
-                          onChange={(e) => setTempMin(parseInt(e.target.value))}
-                          onBlur={handleBlurMin}
-                          onKeyDown={(e) => {
-                            if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                              e.preventDefault(); // ✅ Prevent arrow key changes
-                            }
-                            if (e.key === "Enter") {
-                              handleBlurMin();
-                            }
-                          }}
-                          className="text-sm text-right font-barlow appearance-none border-0 focus:outline-none focus:ring-0 focus-visible:ring-0 min-w-0"
-                          placeholder="Min"
-                        />
-                      </div>
-                      <div className="flex items-center justify-between border border-border col-span-1 px-2.5 py-2">
-                        <span className="font-barlow text-xs">$</span>
-                        <input
-                          type="number"
-                          name="max"
-                          id="max"
-                          inputMode="numeric"
-                          max={MAX_PRICE}
-                          value={tempMax}
-                          onChange={(e) => setTempMax(parseInt(e.target.value))}
-                          onBlur={handleBlurMax}
-                          onKeyDown={(e) => {
-                            if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                              e.preventDefault(); // ✅ Prevent arrow key changes
-                            }
-                            if (e.key === "Enter") {
-                              handleBlurMax();
-                            }
-                          }}
-                          className="text-sm text-right font-barlow appearance-none border-0 focus:outline-none focus:ring-0 focus-visible:ring-0 min-w-0"
-                          placeholder="Max"
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <PriceFilter
+                    range={range}
+                    onRangeChange={commitRangeChange}
+                  />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
