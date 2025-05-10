@@ -73,7 +73,7 @@ export async function fetchAllProducts({
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
       },
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: ["products"] },
     }
   );
 

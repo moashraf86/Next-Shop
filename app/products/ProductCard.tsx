@@ -51,14 +51,14 @@ export default function ProductCard({
         <Image
           className="group-hover:opacity-0 object-cover transition-opacity duration-300"
           src={imageUrl}
-          alt={imageAlt}
+          alt={imageAlt ? imageAlt : "product image"}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
         <Image
           className="opacity-0 group-hover:opacity-100 object-cover transition-opacity duration-300"
           src={product.images[1].url}
-          alt={product.images[1].alternativeText}
+          alt={product.images[1].alternativeText || "product image Hover"}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
