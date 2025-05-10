@@ -1,6 +1,6 @@
 "use client";
 
-import { ListFilter } from "lucide-react";
+import { ListFilter, X } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -20,14 +20,21 @@ import { useEffect, useRef, useState } from "react";
 import { Color, Size } from "@/lib/definitions";
 import ColorSelector from "./ColorSelector";
 import { useWindowScroll } from "@uidotdev/usehooks";
-import { cn } from "@/lib/utils";
+import { buildActiveFilters, cn } from "@/lib/utils";
 import PriceFilter from "./PriceFilter";
+import Link from "next/link";
 
 type ProductsFilterProps = {
   sizes: Size[];
   colors: Color[];
   availableSizes: { id: string; value: string | undefined; colors: Color[] }[];
   availableColors: { id: string; name: string | undefined }[];
+};
+
+type Filter = {
+  name: string;
+  value: string | null | undefined;
+  removeUrl: string;
 };
 
 const MIN_PRICE = 100;
@@ -42,7 +49,8 @@ export default function ProductsFilter({
 }: ProductsFilterProps) {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [paramsCount, setParamsCount] = useState(0);
+  const [activeFilters, setActiveFilters] = useState<Filter[]>([]);
+  const [filtersCount, setFiltersCount] = useState(0);
   const [range, setRange] = useState<[number, number]>(DEFAULT_RANGE);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -107,17 +115,25 @@ export default function ProductsFilter({
     setSelectedSizes(sizeValues);
     setSelectedColors(colorValues);
     setRange([priceMin, priceMax]);
-    // Sanitize invalid values
-    const validColors = colorValues.filter((color) =>
-      availableColors.some((c) => c.name === color)
-    );
 
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("color");
-    validColors.forEach((c) => params.append("color", c));
-    router.replace(`?${params.toString()}`, { scroll: false });
-
-    setParamsCount(sizeValues.length + validColors.length);
+    // Adjust the range if it exceeds the limits
+    const priceRange = [
+      (priceMin === MIN_PRICE && priceMax !== MAX_PRICE) ||
+      (priceMax === MAX_PRICE && priceMin !== MIN_PRICE) ||
+      (priceMin !== MIN_PRICE && priceMax !== MAX_PRICE)
+        ? `$${priceMin.toString()}` + " - " + `$${priceMax.toString()}`
+        : null,
+    ];
+    const filters = buildActiveFilters({
+      sizes,
+      colors,
+      searchParams,
+      sizeValues,
+      colorValues,
+      priceRange,
+    });
+    setActiveFilters(filters);
+    setFiltersCount(filters.length);
   }, [searchParams]);
 
   return (
@@ -128,22 +144,51 @@ export default function ProductsFilter({
           ref={ref}
         >
           <ListFilter className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-barlow">Show Filters</span>
+          <span className="relative flex items-center gap-2 text-sm font-barlow">
+            Show Filters{" "}
+            {filtersCount > 0 && (
+              <span className="flex items-center justify-center min-w-5 w-5 h-5 ps-1 pe-1 text-[9px] font-medium text-white bg-primary rounded-full">
+                {filtersCount}
+              </span>
+            )}
+          </span>
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>
             <SheetTitle>
               <p className="relative flex items-center gap-2">
                 Filters{" "}
-                {paramsCount > 0 && (
+                {filtersCount > 0 && (
                   <span className="flex items-center justify-center min-w-5 w-5 h-5 ps-1 pe-1 text-[9px] font-medium text-white bg-primary rounded-full">
-                    {paramsCount}
+                    {filtersCount}
                   </span>
                 )}
               </p>
             </SheetTitle>
           </SheetHeader>
           <div className="px-6">
+            {activeFilters.length > 0 && (
+              <div className="flex items-center flex-wrap gap-2 py-5">
+                {activeFilters.map((filter) => {
+                  return (
+                    <Link
+                      key={filter.value}
+                      href={filter?.removeUrl}
+                      className="flex items-center gap-2 px-3 py-1 text-sm font-barlow font-light tracking-[1px] bg-gray-100 hover:bg-gray-200 text-primary focus:outline-none focus:ring-1 focus:ring-ring"
+                    >
+                      {filter.value}
+                      <X className="h-4 w-4" />
+                    </Link>
+                  );
+                })}
+                <Link
+                  href="/categories"
+                  className="text-sm font-barlow font-light tracking-[1px] underline underline-offset-2 focus:outline-none focus:ring-1 focus:ring-ring"
+                >
+                  Clear All
+                </Link>
+              </div>
+            )}
             <Accordion type="multiple">
               <AccordionItem value="size">
                 <AccordionTrigger className="text-sm font-barlow font-semibold tracking-[1px] hover:no-underline py-5">
