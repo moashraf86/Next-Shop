@@ -23,18 +23,10 @@ export async function fetchAllProducts({
   // build deep query string to fetch product by slug with all related data
   const query = qs.stringify({
     filters: {
-      ...(size && {
-        sizes: {
-          value: { $eq: size },
-        },
-      }),
-      ...(color && {
-        sizes: {
-          colors: {
-            name: { $eq: color },
-          },
-        },
-      }),
+      sizes: {
+        value: { $eq: size },
+        colors: { name: { $eq: color } },
+      },
       ...(price_min !== undefined || price_max !== undefined
         ? {
             price: {

@@ -1,11 +1,16 @@
 import { fetchAllProducts, fetchCategories } from "@/lib/data";
-import { cn } from "@/lib/utils";
+import {
+  cn,
+  getAllColors,
+  getAllSizes,
+  getAvailableColors,
+  getAvailableSizes,
+} from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import ProductList from "../products/ProductList";
 import ProductSorting from "@/components/product/ProductSorting";
 import ProductsFilter from "@/components/product/ProductsFilter";
-import { Size } from "@/lib/definitions";
 
 const ALL_SIZES = ["32mm", "36mm", "39mm"];
 
@@ -32,76 +37,24 @@ export default async function Categories({
   const allSizesData = allProducts.flatMap((product) => product.sizes);
   const allColorsData = allSizesData.flatMap((size) => size.colors);
 
-  // Get All sizes with its colors
-  const allSizes: Size[] = ALL_SIZES.map((size) => {
-    const matchingSizes = allSizesData.filter((s) => s.value === size);
-
-    // Deduplicate colors by name
-    const uniqueColorsMap = new Map();
-    matchingSizes.forEach((s) => {
-      s.colors?.forEach((color) => {
-        if (!uniqueColorsMap.has(color.name)) {
-          uniqueColorsMap.set(color.name, color);
-        }
-      });
-    });
-
-    return {
-      id: crypto.randomUUID().slice(0, 3),
-      value: size,
-      count: matchingSizes.length,
-      colors: Array.from(uniqueColorsMap.values()),
-    };
+  const allSizes = getAllSizes({
+    allSizesData,
+    ALL_SIZES,
   });
 
-  // Get available sizes only
-  const availableSizesMap = new Map();
-  productsForAvailableSizes
-    .flatMap((p) => p.sizes)
-    .forEach((size) => {
-      if (!availableSizesMap.has(size.value)) {
-        availableSizesMap.set(size.value, {
-          id: crypto.randomUUID().slice(0, 3),
-          value: size.value,
-          count: size.count,
-          colors: size.colors,
-        });
-      }
-    });
-  // ALL AVAILABLE SIZES
-  const availableSizes = Array.from(availableSizesMap.values());
-
-  // Get all colors
-  const allColorsMap = new Map();
-  allColorsData.forEach((color) => {
-    if (!allColorsMap.has(color?.name)) {
-      allColorsMap.set(color?.name, {
-        id: crypto.randomUUID().slice(0, 3),
-        name: color?.name,
-        pattern: color?.pattern,
-        images: color?.images,
-      });
-    }
+  const availableSizes = getAvailableSizes({
+    color,
+    productsForAvailableSizes,
   });
-  const allColors = Array.from(allColorsMap.values());
 
-  //Get available colors only
-  const availableColorsMap = new Map();
-  products
-    .flatMap((p) => p.sizes)
-    .flatMap((s) => s.colors)
-    .forEach((color) => {
-      if (!availableColorsMap.has(color?.name)) {
-        availableColorsMap.set(color?.name, {
-          id: crypto.randomUUID().slice(0, 3),
-          name: color?.name,
-          pattern: color?.pattern,
-          images: color?.images,
-        });
-      }
-    });
-  // ALL AVAILABLE COLORS
-  const availableColors = Array.from(availableColorsMap.values());
+  const allColors = getAllColors({
+    allColorsData,
+  });
+
+  const availableColors = getAvailableColors({
+    size,
+    productsForAvailableSizes,
+  });
 
   return (
     <main>
