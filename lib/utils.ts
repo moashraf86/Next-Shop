@@ -28,8 +28,8 @@ export function buildActiveFilters({
   const sizeFilter = sizeValues.map((size) => {
     const sizeObj = sizes.find((s) => s.value === size);
     const params = new URLSearchParams(searchParams.toString());
-    const sizeParams = params.getAll("size");
-    if (sizeParams.includes(size)) {
+    const hasSize = params.has("size", size);
+    if (hasSize) {
       params.delete("size", size);
     }
     return {
@@ -38,11 +38,12 @@ export function buildActiveFilters({
       removeUrl: `?${params.toString()}`,
     };
   });
+
   const colorFilter = colorValues.map((color) => {
     const colorObj = colors.find((c) => c.name === color);
     const params = new URLSearchParams(searchParams.toString());
-    const colorParams = params.getAll("color");
-    if (colorParams.includes(color)) {
+    const hasColor = params.has("color", color);
+    if (hasColor) {
       params.delete("color", color);
     }
     return {
@@ -51,6 +52,7 @@ export function buildActiveFilters({
       removeUrl: `?${params.toString()}`,
     };
   });
+
   const priceFilter = priceRange.map((price) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("price_min");
