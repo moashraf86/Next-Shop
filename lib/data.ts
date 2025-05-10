@@ -10,20 +10,31 @@ import {
 export async function fetchAllProducts({
   sort = "createdAt:desc",
   size = undefined,
+  color = undefined,
+  price_min = undefined,
+  price_max = undefined,
 }: {
   sort?: string | string[] | undefined;
   size?: string | string[] | undefined;
+  color?: string | string[] | undefined;
+  price_min?: string | string[] | undefined;
+  price_max?: string | string[] | undefined;
 }): Promise<{ products: Product[] }> {
   // build deep query string to fetch product by slug with all related data
   const query = qs.stringify({
     filters: {
-      ...(size && {
-        sizes: {
-          value: {
-            $eq: size,
-          },
-        },
-      }),
+      sizes: {
+        value: { $eq: size },
+        colors: { name: { $eq: color } },
+      },
+      ...(price_min !== undefined || price_max !== undefined
+        ? {
+            price: {
+              ...(price_min !== undefined && { $gte: price_min }),
+              ...(price_max !== undefined && { $lte: price_max }),
+            },
+          }
+        : {}),
     },
     sort: [sort],
     populate: {
@@ -39,6 +50,9 @@ export async function fetchAllProducts({
               images: {
                 fields: ["url", "alternativeText"],
               },
+              pattern: {
+                fields: ["url", "alternativeText"],
+              },
             },
           },
         },
@@ -51,7 +65,7 @@ export async function fetchAllProducts({
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
       },
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: ["products"] },
     }
   );
 

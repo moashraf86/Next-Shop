@@ -1,8 +1,9 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import TopProgressBar from "../shared/TopProgressBar";
+import { useWindowScroll } from "@uidotdev/usehooks";
 
 export default function ProductSorting() {
   const searchParams = useSearchParams();
@@ -13,6 +14,16 @@ export default function ProductSorting() {
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(false);
 
+  const ref = useRef<HTMLDivElement>(null);
+  const [{ y: pageScrollY }, scrollTo] = useWindowScroll();
+  const scrollToProducts = () => {
+    scrollTo({
+      top: ref.current
+        ? ref.current.getBoundingClientRect().top + (pageScrollY ?? 0) - 100
+        : pageScrollY,
+      behavior: "smooth",
+    });
+  };
   // Define sorting options
   const sortingOptions = [
     { label: "Latest", value: "createdAt:desc" },
@@ -25,6 +36,8 @@ export default function ProductSorting() {
 
   // Handle sorting change
   const handleSortingChange = (value: string) => {
+    // Scroll to the top of the products section
+    scrollToProducts();
     setIsLoading(true);
     // simulate a delay to show loading state
     setTimeout(() => {
@@ -45,16 +58,19 @@ export default function ProductSorting() {
   return (
     <>
       <TopProgressBar trigger={isLoading || isPending} />
-      <div className="flex items-center gap-1">
-        <span className="text-sm whitespace-nowrap text-gray-500">Sort by</span>
+      <div className="flex items-center gap-1" ref={ref}>
+        <span className="hidden md:inline text-sm whitespace-nowrap text-gray-500">
+          Sort by
+        </span>
         <Select defaultValue={currentSort} onValueChange={handleSortingChange}>
           <SelectTrigger className="border-none gap-1">
-            <span className="text-sm font-barlow">
+            <span className="md:!hidden">Sort By</span>
+            <span className="!hidden md:!inline-block text-sm font-barlow">
               {sortingOptions.find((option) => option.value === sortByParam)
                 ?.label || "Latest"}
             </span>
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent align="end">
             {sortingOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 <span className="text-sm font-barlow">{option.label}</span>

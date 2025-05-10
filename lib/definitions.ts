@@ -21,15 +21,16 @@ export interface Product {
 }
 
 export interface Size {
-  id: number;
+  id: number | string;
   value: string;
-  colors: Color[];
+  colors?: Color[];
+  count?: number;
 }
 
 export interface Color {
   id: number;
   name: string;
-  images: StrapiImage[];
+  images?: StrapiImage[];
   pattern: StrapiImage;
 }
 export interface Strap {
